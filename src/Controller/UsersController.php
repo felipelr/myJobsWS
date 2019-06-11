@@ -18,6 +18,7 @@ class UsersController extends AppController
     public function initialize()
     {
         parent::initialize();
+        $this->loadComponent('RequestHandler');
         $this->Auth->allow(['login']);
     }
 
@@ -50,11 +51,13 @@ class UsersController extends AppController
      */
     public function index()
     {
-        $this->paginate = [
-            'contain' => ['Roles']
-        ];
-        $users = $this->paginate($this->Users);
+        $users = $this->Users->find('all')
+        ->where(['Users.active = ' => true])
+        ->limit(10);
 
-        $this->set(compact('users'));
+        $this->set([
+            'users' => $users,
+            '_serialize' => ['users']
+        ]);
     }
 }
