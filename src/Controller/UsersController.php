@@ -26,7 +26,7 @@ class UsersController extends AppController
         if ($this->request->is('post')) {
             $user = $this->Auth->identify();
             if (!$user) { 
-                throw new UnauthorizedException('Invalid email or password');
+                throw new UnauthorizedException('O email ou a senha estão inválidos.');
             }
             $this->set([
                 'success' => true,
