@@ -13,13 +13,12 @@ class CategoriesController extends AppController
  
     public function index()
     {
-        $users = $this->Users->find('all')
-        ->where(['Users.active = ' => true])
-        ->limit(10);
+        $categories = $this->Categories->find('all')
+        ->where(['Categories.active = ' => true]);
 
         $this->set([
-            'users' => $users,
-            '_serialize' => ['users']
+            'categories' => $categories,
+            '_serialize' => ['categories']
         ]);
     }
 
