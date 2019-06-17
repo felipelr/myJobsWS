@@ -10,7 +10,12 @@ use Cake\Validation\Validator;
  * Professionals Model
  *
  * @property \App\Model\Table\CitiesTable|\Cake\ORM\Association\BelongsTo $Cities
+ * @property |\Cake\ORM\Association\BelongsTo $Subcategories
+ * @property |\Cake\ORM\Association\BelongsTo $Users
+ * @property |\Cake\ORM\Association\HasMany $Highlights
  * @property \App\Model\Table\ProfessionalPhonesTable|\Cake\ORM\Association\HasMany $ProfessionalPhones
+ * @property |\Cake\ORM\Association\HasMany $ProfessionalServices
+ * @property |\Cake\ORM\Association\HasMany $ProfessionalsAddress
  * @property \App\Model\Table\RatingsTable|\Cake\ORM\Association\HasMany $Ratings
  *
  * @method \App\Model\Entity\Professional get($primaryKey, $options = [])
@@ -45,7 +50,22 @@ class ProfessionalsTable extends Table
         $this->belongsTo('Cities', [
             'foreignKey' => 'city_id'
         ]);
+        $this->belongsTo('Subcategories', [
+            'foreignKey' => 'subcategoria_id'
+        ]);
+        $this->belongsTo('Users', [
+            'foreignKey' => 'user_id'
+        ]);
+        $this->hasMany('Highlights', [
+            'foreignKey' => 'professional_id'
+        ]);
         $this->hasMany('ProfessionalPhones', [
+            'foreignKey' => 'professional_id'
+        ]);
+        $this->hasMany('ProfessionalServices', [
+            'foreignKey' => 'professional_id'
+        ]);
+        $this->hasMany('ProfessionalsAddress', [
             'foreignKey' => 'professional_id'
         ]);
         $this->hasMany('Ratings', [
@@ -69,6 +89,10 @@ class ProfessionalsTable extends Table
             ->maxLength('name', 255)
             ->requirePresence('name', 'create')
             ->allowEmptyString('name', false);
+
+        $validator
+            ->integer('description')
+            ->allowEmptyString('description');
 
         $validator
             ->date('date_birth')
@@ -125,6 +149,8 @@ class ProfessionalsTable extends Table
     {
         $rules->add($rules->isUnique(['email']));
         $rules->add($rules->existsIn(['city_id'], 'Cities'));
+        $rules->add($rules->existsIn(['subcategoria_id'], 'Subcategories'));
+        $rules->add($rules->existsIn(['user_id'], 'Users'));
 
         return $rules;
     }

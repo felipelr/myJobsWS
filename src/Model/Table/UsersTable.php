@@ -10,6 +10,9 @@ use Cake\Validation\Validator;
  * Users Model
  *
  * @property \App\Model\Table\RolesTable|\Cake\ORM\Association\BelongsTo $Roles
+ * @property |\Cake\ORM\Association\HasMany $Clients
+ * @property |\Cake\ORM\Association\HasMany $Professionals
+ * @property |\Cake\ORM\Association\HasMany $Ratings
  *
  * @method \App\Model\Entity\User get($primaryKey, $options = [])
  * @method \App\Model\Entity\User newEntity($data = null, array $options = [])
@@ -44,6 +47,15 @@ class UsersTable extends Table
             'foreignKey' => 'role_id',
             'joinType' => 'INNER'
         ]);
+        $this->hasMany('Clients', [
+            'foreignKey' => 'user_id'
+        ]);
+        $this->hasMany('Professionals', [
+            'foreignKey' => 'user_id'
+        ]);
+        $this->hasMany('Ratings', [
+            'foreignKey' => 'user_id'
+        ]);
     }
 
     /**
@@ -55,13 +67,7 @@ class UsersTable extends Table
     public function validationDefault(Validator $validator)
     {
         $validator
-            ->nonNegativeInteger('id')
             ->allowEmptyString('id', 'create');
-
-        $validator
-            ->scalar('name')
-            ->maxLength('name', 255)
-            ->allowEmptyString('name');
 
         $validator
             ->email('email')
