@@ -8,6 +8,8 @@ use Cake\ORM\Entity;
  *
  * @property int $id
  * @property int|null $city_id
+ * @property int|null $subcategoria_id
+ * @property int|null $user_id
  * @property string $name
  * @property int|null $description
  * @property \Cake\I18n\FrozenDate|null $date_birth
@@ -39,6 +41,8 @@ class Professional extends Entity
      */
     protected $_accessible = [
         'city_id' => true,
+        'subcategoria_id' => true,
+        'user_id' => true,
         'name' => true,
         'description' => true,
         'date_birth' => true,

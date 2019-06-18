@@ -26,18 +26,20 @@ class UsersController extends AppController
     {
         if ($this->request->is('post')) {
             $user = $this->Auth->identify();
-            if (!$user) { 
+            if (!$user) {
                 throw new UnauthorizedException('O email ou a senha estão inválidos.');
             }
             $this->set([
                 'success' => true,
                 'data' => [
-                    'token' => JWT::encode([
-                        'sub' => $user['id'],
-                        'exp' =>  time() + 36000, // 10 hour
-                        'role' => $user['role']['name']
-                    ],
-                    Security::salt())
+                    'token' => JWT::encode(
+                        [
+                            'sub' => $user['id'],
+                            'exp' =>  time() + (30 * 24 * 60 * 60), // 30 dias
+                            'role' => $user['role']['name']
+                        ],
+                        Security::salt()
+                    )
                 ],
                 '_serialize' => ['success', 'data']
             ]);
@@ -52,8 +54,8 @@ class UsersController extends AppController
     public function index()
     {
         $users = $this->Users->find('all')
-        ->where(['Users.active = ' => true])
-        ->limit(10);
+            ->where(['Users.active = ' => true])
+            ->limit(10);
 
         $this->set([
             'users' => $users,
