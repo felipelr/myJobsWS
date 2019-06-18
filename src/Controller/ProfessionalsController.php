@@ -37,7 +37,7 @@ class ProfessionalsController extends AppController
     public function view($id = null)
     {
         $professional = $this->Professionals->get($id, [
-            'contain' => ['Cities', 'ProfessionalPhones', 'Ratings']
+            'contain' => ['Cities', 'Highlights', 'ProfessionalPhones', 'Ratings']
         ]);
 
         $this->set('professional', $professional);

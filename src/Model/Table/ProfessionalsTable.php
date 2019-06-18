@@ -10,6 +10,7 @@ use Cake\Validation\Validator;
  * Professionals Model
  *
  * @property \App\Model\Table\CitiesTable|\Cake\ORM\Association\BelongsTo $Cities
+ * @property |\Cake\ORM\Association\HasMany $Highlights
  * @property \App\Model\Table\ProfessionalPhonesTable|\Cake\ORM\Association\HasMany $ProfessionalPhones
  * @property \App\Model\Table\RatingsTable|\Cake\ORM\Association\HasMany $Ratings
  *
@@ -45,6 +46,9 @@ class ProfessionalsTable extends Table
         $this->belongsTo('Cities', [
             'foreignKey' => 'city_id'
         ]);
+        $this->hasMany('Highlights', [
+            'foreignKey' => 'professional_id'
+        ]);
         $this->hasMany('ProfessionalPhones', [
             'foreignKey' => 'professional_id'
         ]);
@@ -69,6 +73,10 @@ class ProfessionalsTable extends Table
             ->maxLength('name', 255)
             ->requirePresence('name', 'create')
             ->allowEmptyString('name', false);
+
+        $validator
+            ->integer('description')
+            ->allowEmptyString('description');
 
         $validator
             ->date('date_birth')

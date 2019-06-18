@@ -9,6 +9,7 @@ use Cake\ORM\Entity;
  * @property int $id
  * @property int|null $city_id
  * @property string $name
+ * @property int|null $description
  * @property \Cake\I18n\FrozenDate|null $date_birth
  * @property string|null $email
  * @property string|null $photo
@@ -39,6 +40,7 @@ class Professional extends Entity
     protected $_accessible = [
         'city_id' => true,
         'name' => true,
+        'description' => true,
         'date_birth' => true,
         'email' => true,
         'photo' => true,

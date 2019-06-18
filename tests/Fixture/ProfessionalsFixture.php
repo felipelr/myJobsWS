@@ -18,6 +18,7 @@ class ProfessionalsFixture extends TestFixture
         'id' => ['type' => 'biginteger', 'length' => 20, 'unsigned' => false, 'null' => false, 'default' => null, 'comment' => '', 'autoIncrement' => true, 'precision' => null],
         'city_id' => ['type' => 'integer', 'length' => 11, 'unsigned' => false, 'null' => true, 'default' => null, 'comment' => '', 'precision' => null, 'autoIncrement' => null],
         'name' => ['type' => 'string', 'length' => 255, 'null' => false, 'default' => null, 'collate' => 'latin1_general_ci', 'comment' => '', 'precision' => null, 'fixed' => null],
+        'description' => ['type' => 'integer', 'length' => 11, 'unsigned' => false, 'null' => true, 'default' => null, 'comment' => '', 'precision' => null, 'autoIncrement' => null],
         'date_birth' => ['type' => 'date', 'length' => null, 'null' => true, 'default' => null, 'comment' => '', 'precision' => null],
         'email' => ['type' => 'string', 'length' => 150, 'null' => true, 'default' => null, 'collate' => 'latin1_general_ci', 'comment' => '', 'precision' => null, 'fixed' => null],
         'photo' => ['type' => 'string', 'length' => 255, 'null' => true, 'default' => null, 'collate' => 'latin1_general_ci', 'comment' => '', 'precision' => null, 'fixed' => null],
@@ -54,6 +55,7 @@ class ProfessionalsFixture extends TestFixture
                 'id' => 1,
                 'city_id' => 1,
                 'name' => 'Lorem ipsum dolor sit amet',
+                'description' => 1,
                 'date_birth' => '2019-06-14',
                 'email' => 'Lorem ipsum dolor sit amet',
                 'photo' => 'Lorem ipsum dolor sit amet',
@@ -63,8 +65,8 @@ class ProfessionalsFixture extends TestFixture
                 'latitude' => 1,
                 'longitude' => 1,
                 'active' => 1,
-                'created' => '2019-06-14 01:18:20',
-                'modified' => '2019-06-14 01:18:20'
+                'created' => '2019-06-14 10:19:21',
+                'modified' => '2019-06-14 10:19:21'
             ],
         ];
         parent::init();
