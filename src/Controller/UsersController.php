@@ -5,6 +5,7 @@ use App\Controller\AppController;
 use Cake\Http\Exception\UnauthorizedException;
 use Cake\Utility\Security;
 use Firebase\JWT\JWT;
+use Cake\ORM\TableRegistry;
 
 /**
  * Users Controller
@@ -46,11 +47,6 @@ class UsersController extends AppController
         }
     }
 
-    /**
-     * Index method
-     *
-     * @return \Cake\Http\Response|void
-     */
     public function index()
     {
         $users = $this->Users->find('all')
@@ -61,5 +57,74 @@ class UsersController extends AppController
             'users' => $users,
             '_serialize' => ['users']
         ]);
+    }
+
+    public function add()
+    {
+        $user = $this->Users->newEntity();
+        $errorMessage = '';
+        $newUser = null;
+        if ($this->request->is('post')) {
+            $requestData = $this->request->getData();
+            $user = $this->Users->patchEntity($user, $requestData);
+
+            if ($user['email'] == '') {
+                $errorMessage = 'O email não foi informado.';
+            }
+
+            if ($errorMessage == '') {
+                $userExistent = $this->Users->find('all')
+                    ->where(['Users.email = ' => $user['email']])
+                    ->limit(1);
+
+                if ($userExistent->count() > 0) {
+                    //not ok
+                    $errorMessage = 'Já existe um usuário cadastrado com esse email.';
+                } else {
+                    //fixo por enquanto
+                    $user['role_id'] = 1;
+
+                    if ($this->Users->save($user)) {
+                        if ($requestData['userType'] == 1) {
+                            $Clients = TableRegistry::getTableLocator()->get('Clients');
+                            $client = $Clients->newEntity();
+                            $client = $Clients->patchEntity($client, $requestData);
+
+                            $client['user_id'] = $user['id'];
+
+                            if ($client['name'] == '') {
+                                //not ok
+                                $errorMessage = 'O nome não foi informado.';
+                            } else if ($Clients->save($client)) {
+                                //ok
+                                $errorMessage = '';
+                                $newUser = $Clients->get($client['id'], [
+                                    'contain' => ['Users']
+                                ]);
+                            } else {
+                                //not ok
+                                $errorMessage = 'Não foi possível criar o usuário.' . json_encode($client->getErrors());
+                            }
+                        }
+                    } else {
+                        //not ok
+                        $errorMessage = 'Não foi possível criar o usuário.';
+                    }
+                }
+            }
+        }
+
+        if ($errorMessage == '') {
+            $this->set([
+                'newUser' => $newUser,
+                '_serialize' => ['newUser']
+            ]);
+        } else {
+            $this->set([
+                'error' => true,
+                'errorMessage' => $errorMessage,
+                '_serialize' => ['error', 'errorMessage']
+            ]);
+        }
     }
 }

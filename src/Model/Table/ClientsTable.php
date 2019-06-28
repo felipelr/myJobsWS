@@ -87,22 +87,18 @@ class ClientsTable extends Table
         $validator
             ->scalar('genre')
             ->maxLength('genre', 255)
-            ->requirePresence('genre', 'create')
             ->allowEmptyString('genre', false);
 
         $validator
             ->numeric('latitude')
-            ->requirePresence('latitude', 'create')
             ->allowEmptyString('latitude', false);
 
         $validator
             ->numeric('longitude')
-            ->requirePresence('longitude', 'create')
             ->allowEmptyString('longitude', false);
 
         $validator
             ->boolean('active')
-            ->requirePresence('active', 'create')
             ->allowEmptyString('active', false);
 
         return $validator;
