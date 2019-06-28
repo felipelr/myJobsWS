@@ -59,6 +59,52 @@ class UsersController extends AppController
         ]);
     }
 
+    function validateUser($requestData)
+    {
+        $errorMessage = '';
+
+        if (!(isset($requestData['email']) && $requestData['email'] != '')) {
+            $errorMessage = 'O email é inválido.';
+        }
+
+        if (!(isset($requestData['password']) && $requestData['password'] != '')) {
+            $errorMessage = 'A senha é inválida.';
+        }
+
+        if (!(isset($requestData['userType']) && $requestData['userType'] != '')) {
+            $errorMessage = 'O tipo de usuário é inválido.';
+        }
+
+        return $errorMessage;
+    }
+
+    function validateClient($requestData)
+    {
+        $errorMessage = '';
+
+        if (!(isset($requestData['name']) && $requestData['name'] != '')) {
+            $errorMessage = 'O nome é inválido.';
+        }
+
+        if (!(isset($requestData['phone']) && $requestData['phone'] != '')) {
+            $errorMessage = 'O telefone é inválido.';
+        }
+
+        if (!(isset($requestData['document']) && $requestData['document'] != '')) {
+            $errorMessage = 'O CPF/CNPJ é inválido.';
+        }
+
+        if (!(isset($requestData['date_birth']) && $requestData['date_birth'] != '')) {
+            $errorMessage = 'A data de nascimento é inválido.';
+        }
+
+        if (!(isset($requestData['genre']) && $requestData['genre'] != '')) {
+            $errorMessage = 'O gênero é inválido.';
+        }
+
+        return $errorMessage;
+    }
+
     public function add()
     {
         $user = $this->Users->newEntity();
@@ -68,8 +114,16 @@ class UsersController extends AppController
             $requestData = $this->request->getData();
             $user = $this->Users->patchEntity($user, $requestData);
 
-            if ($user['email'] == '') {
-                $errorMessage = 'O email não foi informado.';
+            //validações do user
+            $errorMessage = $this->validateUser($requestData);
+
+            if ($errorMessage == '') {
+                if ($requestData['userType'] == '1') {
+                    //validações do client
+                    $errorMessage = $this->validateClient($requestData);
+                } else {
+                    //validações do professional
+                }
             }
 
             if ($errorMessage == '') {
@@ -82,7 +136,8 @@ class UsersController extends AppController
                     $errorMessage = 'Já existe um usuário cadastrado com esse email.';
                 } else {
                     //fixo por enquanto
-                    $user['role_id'] = 1;
+                    $user['role_id'] = $requestData['userType'] == '1' ? 1 : 2;
+                    $user['password'] = password_hash($user['password'], PASSWORD_BCRYPT, ["cost" => 10]);
 
                     if ($this->Users->save($user)) {
                         if ($requestData['userType'] == 1) {
@@ -103,6 +158,7 @@ class UsersController extends AppController
                                 ]);
                             } else {
                                 //not ok
+                                $this->Users->delete($user);
                                 $errorMessage = 'Não foi possível criar o usuário.' . json_encode($client->getErrors());
                             }
                         }
