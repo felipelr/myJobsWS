@@ -20,7 +20,7 @@ class UsersController extends AppController
     {
         parent::initialize();
         $this->loadComponent('RequestHandler');
-        $this->Auth->allow(['login']);
+        $this->Auth->allow(['login', 'add']);
     }
 
     public function login()
