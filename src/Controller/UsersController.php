@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Controller;
 
 use App\Controller\AppController;
@@ -20,7 +21,7 @@ class UsersController extends AppController
     {
         parent::initialize();
         $this->loadComponent('RequestHandler');
-        $this->Auth->allow(['login', 'add']);
+        $this->Auth->allow(['login', 'add', 'socialMidiaVerify']);
     }
 
     public function login()
@@ -98,7 +99,7 @@ class UsersController extends AppController
             $errorMessage = 'A data de nascimento é inválido.';
         }
 
-        if (!(isset($requestData['genre']) && $requestData['genre'] != '')) {
+        if (!(isset($requestData['gender']) && $requestData['gender'] != '')) {
             $errorMessage = 'O gênero é inválido.';
         }
 
@@ -180,6 +181,76 @@ class UsersController extends AppController
                 'error' => true,
                 'errorMessage' => $errorMessage,
                 '_serialize' => ['error', 'errorMessage']
+            ]);
+        }
+    }
+
+    public function socialMidiaVerify()
+    {
+        $errorMessage = '';
+        $clientRow = null;
+        if ($this->request->is('post')) {
+            $requestData = $this->request->getData();
+
+            if (!(isset($requestData['socialMidiaId']) && $requestData['socialMidiaId'] != '')) {
+                $errorMessage = 'Os dados informados estão incompletos.';
+            }
+
+            if (!(isset($requestData['socialMidiaType']) && $requestData['socialMidiaType'] != '')) {
+                $errorMessage = 'Os dados informados estão incompletos.';
+            }
+
+            if ($errorMessage == '') {
+                if ($requestData['socialMidiaType'] == 'facebook') {
+                    $queryUsers = $this->Users->find('all')
+                        ->where(['Users.facebook_id = ' => $requestData['socialMidiaId']])
+                        ->limit(1);
+
+                    if ($queryUsers->count() > 0) {
+                        $userRow = $queryUsers->first();
+                        $Clients = TableRegistry::getTableLocator()->get('Clients');
+                        $queryClient = $Clients->find('all')
+                            ->where(['Clients.user_id = ' => $userRow['id']])
+                            ->contain(['Users'])
+                            ->limit(1);
+                        $clientRow = $queryClient->first();
+                    } else {
+                        $errorMessage = 'Usuário não encontrado.';
+                    }
+                } else if ($requestData['socialMidiaType'] == 'google') {
+                    $queryUsers = $this->Users->find('all')
+                        ->where(['Users.google_id = ' => $requestData['socialMidiaId']])
+                        ->limit(1);
+
+                    if ($queryUsers->count() > 0) {
+                        $userRow = $queryUsers->first();
+                        $Clients = TableRegistry::getTableLocator()->get('Clients');
+                        $queryClient = $Clients->find('all')
+                            ->where(['Clients.user_id = ' => $userRow['id']])
+                            ->contain(['Users'])
+                            ->limit(1);
+                        $clientRow = $queryClient->first();
+                    } else {
+                        $errorMessage = 'Usuário não encontrado.';
+                    }
+                } else {
+                    $errorMessage = 'Tipo de social mídia inválido.';
+                }
+            }
+        }
+
+        if ($errorMessage == '') {
+            $this->set([
+                'user' => $clientRow,
+                '_serialize' => ['user']
+            ]);
+        } else {
+            $this->set([
+                'error' => true,
+                'errorMessage' => $errorMessage,
+                'id' => $requestData['socialMidiaId'],
+                'type' => $requestData['socialMidiaType'],
+                '_serialize' => ['error', 'errorMessage', 'id', 'type']
             ]);
         }
     }
