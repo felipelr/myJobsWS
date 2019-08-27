@@ -50,13 +50,21 @@ class UsersController extends AppController
 
     public function index()
     {
-        $users = $this->Users->find('all')
-            ->where(['Users.active = ' => true])
-            ->limit(10);
+        
+    }
+
+    public function view($id)
+    {
+        $Clients = TableRegistry::getTableLocator()->get('Clients');
+        $queryClient = $Clients->find('all')
+            ->where(['Clients.user_id = ' => $id])
+            ->contain(['Users'])
+            ->limit(1);
+        $clientRow = $queryClient->first();
 
         $this->set([
-            'users' => $users,
-            '_serialize' => ['users']
+            'client' => $clientRow,
+            '_serialize' => ['client']
         ]);
     }
 
