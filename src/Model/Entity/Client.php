@@ -39,7 +39,7 @@ class Client extends Entity
         'phone' => true,
         'document' => true,
         'date_birth' => true,
-        'genre' => true,
+        'gender' => true,
         'latitude' => true,
         'longitude' => true,
         'created' => true,

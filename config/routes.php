@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Routes configuration
  *
@@ -17,6 +18,7 @@
  * @link          https://cakephp.org CakePHP(tm) Project
  * @license       https://opensource.org/licenses/mit-license.php MIT License
  */
+
 use Cake\Http\Middleware\CsrfProtectionMiddleware;
 use Cake\Routing\RouteBuilder;
 use Cake\Routing\Router;
@@ -68,7 +70,7 @@ Router::scope('/', function (RouteBuilder $routes) {
      * ...and connect the rest of 'Pages' controller's URLs.
      */
     $routes->connect('/pages/*', ['controller' => 'Pages', 'action' => 'display']);
-	
+
 
     /**
      * Connect catchall routes for all controllers.
@@ -90,7 +92,7 @@ Router::scope('/', function (RouteBuilder $routes) {
      * routes you want in your application.
      */
     $routes->fallbacks(DashedRoute::class);
-});  
+});
 
 /**
  * If you need a different set of middleware or none at all,
@@ -105,8 +107,8 @@ Router::scope('/', function (RouteBuilder $routes) {
  */
 
 Router::scope('/api', function (RouteBuilder $routes) {
-     // No $routes->applyMiddleware() here.
-     // Connect API actions here.
-     $routes->extensions(['json']);
+    // No $routes->applyMiddleware() here.
+    // Connect API actions here.
+    $routes->extensions(['json']);
     $routes->fallbacks(DashedRoute::class);
- });
+});

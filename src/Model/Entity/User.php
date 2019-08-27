@@ -34,7 +34,9 @@ class User extends Entity
         'active' => true,
         'created' => true,
         'modified' => true,
-        'role' => true
+        'role' => true,
+        'facebook_id' => true,
+        'google_id' => true
     ];
 
     /**

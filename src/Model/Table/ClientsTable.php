@@ -85,9 +85,9 @@ class ClientsTable extends Table
             ->allowEmptyDate('date_birth', false);
 
         $validator
-            ->scalar('genre')
-            ->maxLength('genre', 255)
-            ->allowEmptyString('genre', false);
+            ->scalar('gender')
+            ->maxLength('gender', 255)
+            ->allowEmptyString('gender', false);
 
         $validator
             ->numeric('latitude')
