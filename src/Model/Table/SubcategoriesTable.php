@@ -65,7 +65,8 @@ class SubcategoriesTable extends Table
             ->allowEmptyString('icon', false);
 
         $validator
-            ->allowEmptyString('active', false);
+        ->boolean('active')
+        ->allowEmptyString('active', false);
 
         return $validator;
     }

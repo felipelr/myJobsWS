@@ -5,7 +5,18 @@ use App\Controller\AppController;
 
 class ServicesController extends AppController
 { 
-    public function index($idSubcategory = null)
+    public function index()
+    {
+        $services = $this->Service->find('all')
+        ->where(['Services.active = ' => true]);
+
+        $this->set([
+            'services' => $services,
+            '_serialize' => ['services']
+        ]);
+    }
+
+    public function getBySubcategory($idSubcategory = null)
     {
         $services = $this->Service->find('all')
         ->where(['Services.active = ' => true])
@@ -16,6 +27,5 @@ class ServicesController extends AppController
             '_serialize' => ['services']
         ]);
     }
-
    
 }

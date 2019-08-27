@@ -12,15 +12,15 @@ use App\Controller\AppController;
  */
 class SubcategoriesController extends AppController
 { 
-    public function index($idCategoria = null)
+    public function view($idCategoria = null)
     {
-        $categories = $this->Categories->find('all')
+        $subcategories = $this->Subcategories->find('all')
         ->where(['Subcategories.active = ' => true])
         ->andWhere(['Subcategories.category_id = ' => $idCategoria]);
 
         $this->set([
-            'categories' => $categories,
-            '_serialize' => ['categories']
+            'subcategories' => $subcategories,
+            '_serialize' => ['subcategories']
         ]);
     }
     
