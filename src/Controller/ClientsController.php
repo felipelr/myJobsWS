@@ -13,19 +13,10 @@ use App\Controller\AppController;
  */
 class ClientsController extends AppController
 {
-    /**
-     * Index method
-     *
-     * @return \Cake\Http\Response|void
-     */
-    public function index()
+    public function initialize()
     {
-        $this->paginate = [
-            'contain' => ['Users']
-        ];
-        $clients = $this->paginate($this->Clients);
-
-        $this->set(compact('clients'));
+        parent::initialize();
+        $this->loadComponent('RequestHandler');
     }
 
     /**
