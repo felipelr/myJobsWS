@@ -1,7 +1,9 @@
 <?php
+
 namespace App\Controller;
 
 use App\Controller\AppController;
+use Cake\Datasource\ConnectionManager;
 
 /**
  * Subcategories Controller
@@ -11,27 +13,21 @@ use App\Controller\AppController;
  * @method \App\Model\Entity\Subcategory[]|\Cake\Datasource\ResultSetInterface paginate($object = null, array $settings = [])
  */
 class SubcategoriesController extends AppController
-{ 
+{
     public function view($idCategoria = null)
-    { 
-        $subcategories = $this->Subcategories->find('all', array(
-            'contain' => array('Services'),
-            'conditions' => array(
-                'Services.subcategory_id = Subcategories.id',
-                'Services.active = 1',
-            ),
-            'order' => 'Services.description DESC'
-        ))
-        ->where(['Subcategories.active = ' => true])
-        ->andWhere(['Subcategories.category_id = ' => $idCategoria]);
-
-        echo(json_decode($subcategories));
+    {
+        $connection = ConnectionManager::get('default');
+        $results = $connection->execute("SELECT subcategories.id, subcategories.category_id, 
+            subcategories.description, subcategories.icon, subcategories.active, COUNT(services.id) AS countServices 
+            FROM subcategories 
+            INNER JOIN services ON (subcategories.id = services.subcategory_id) 
+            WHERE subcategories.category_id = $idCategoria 
+            GROUP BY subcategories.id, subcategories.category_id, subcategories.description, subcategories.icon, subcategories.active")
+            ->fetchAll('assoc');
 
         $this->set([
-            'subcategories' => $subcategories,
+            'subcategories' => $results,
             '_serialize' => ['subcategories']
         ]);
-        
     }
-    
 }
