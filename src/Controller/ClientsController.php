@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Controller\AppController;
+use Exception;
 
 /**
  * Clients Controller
@@ -19,13 +20,6 @@ class ClientsController extends AppController
         $this->loadComponent('RequestHandler');
     }
 
-    /**
-     * View method
-     *
-     * @param string|null $id Client id.
-     * @return \Cake\Http\Response|void
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
-     */
     public function view($id = null)
     {
         $client = $this->Clients->get($id, [
@@ -35,13 +29,6 @@ class ClientsController extends AppController
         $this->set('client', $client);
     }
 
-    /**
-     * Edit method
-     *
-     * @param string|null $id Client id.
-     * @return \Cake\Http\Response|null Redirects on successful edit, renders view otherwise.
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
-     */
     public function edit($id = null)
     {
         $client = $this->Clients->get($id, [
@@ -50,13 +37,30 @@ class ClientsController extends AppController
 
         $errorMessage = '';
         if ($this->request->is(['patch', 'post', 'put'])) {
-            $client = $this->Clients->patchEntity($client, $this->request->getData());
-            if (!$this->Clients->save($client)) {
-                //sucesso
-                $errorMessage = '';
-            } else {
-                //erro
-                $errorMessage = 'Não foi possível salvar os dados do cliente.';
+            try {
+                $image = $this->request->getData('image');
+                $client = $this->Clients->patchEntity($client, $this->request->getData());
+                if (isset($image)) {
+                    $base64 = $image;
+                    $output_file = WWW_ROOT . 'img' . DS . 'client-' . $client['id'] . '.jpeg';
+                    $ifp = fopen($output_file, 'wb');
+                    fwrite($ifp, base64_decode($base64));
+                    fclose($ifp);
+                    $client['image_path'] = $output_file;
+                }
+                else{
+                    $client['image_path'] = $image;
+                }
+
+                if ($this->Clients->save($client)) {
+                    //sucesso                
+                    $errorMessage = '';
+                } else {
+                    //erro
+                    $errorMessage = 'Não foi possível salvar os dados do cliente.';
+                }
+            } catch (Exception $ex) {
+                $errorMessage = $ex->getMessage();
             }
         }
 
