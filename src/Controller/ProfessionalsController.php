@@ -1,111 +1,27 @@
 <?php
+
 namespace App\Controller;
 
 use App\Controller\AppController;
+use Cake\Datasource\ConnectionManager;
 
-/**
- * Professionals Controller
- *
- * @property \App\Model\Table\ProfessionalsTable $Professionals
- *
- * @method \App\Model\Entity\Professional[]|\Cake\Datasource\ResultSetInterface paginate($object = null, array $settings = [])
- */
 class ProfessionalsController extends AppController
 {
-    /**
-     * Index method
-     *
-     * @return \Cake\Http\Response|void
-     */
-    public function index()
+    public function highlights()
     {
-        $this->paginate = [
-            'contain' => ['Cities']
-        ];
-        $professionals = $this->paginate($this->Professionals);
+        $connection = ConnectionManager::get('default');
+        $results = $connection->execute(
+        "SELECT p.id, p.name, p.description, count(ps.service_id) as qtdeServices, p.photo as imagem FROM highlights as h
+         INNER JOIN professionals as p ON(h.professional_id = p.id)
+         INNER JOIN professional_services as ps ON(ps.professional_id = p.id)
+         WHERE p.active = 1
+         GROUP BY p.id"
+        )
+            ->fetchAll('assoc');
 
-        $this->set(compact('professionals'));
-    }
-
-    /**
-     * View method
-     *
-     * @param string|null $id Professional id.
-     * @return \Cake\Http\Response|void
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
-     */
-    public function view($id = null)
-    {
-        $professional = $this->Professionals->get($id, [
-            'contain' => ['Cities', 'Highlights', 'ProfessionalPhones', 'Ratings']
+        $this->set([
+            'highlights' => $results,
+            '_serialize' => ['highlights']
         ]);
-
-        $this->set('professional', $professional);
-    }
-
-    /**
-     * Add method
-     *
-     * @return \Cake\Http\Response|null Redirects on successful add, renders view otherwise.
-     */
-    public function add()
-    {
-        $professional = $this->Professionals->newEntity();
-        if ($this->request->is('post')) {
-            $professional = $this->Professionals->patchEntity($professional, $this->request->getData());
-            if ($this->Professionals->save($professional)) {
-                $this->Flash->success(__('The professional has been saved.'));
-
-                return $this->redirect(['action' => 'index']);
-            }
-            $this->Flash->error(__('The professional could not be saved. Please, try again.'));
-        }
-        $cities = $this->Professionals->Cities->find('list', ['limit' => 200]);
-        $this->set(compact('professional', 'cities'));
-    }
-
-    /**
-     * Edit method
-     *
-     * @param string|null $id Professional id.
-     * @return \Cake\Http\Response|null Redirects on successful edit, renders view otherwise.
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
-     */
-    public function edit($id = null)
-    {
-        $professional = $this->Professionals->get($id, [
-            'contain' => []
-        ]);
-        if ($this->request->is(['patch', 'post', 'put'])) {
-            $professional = $this->Professionals->patchEntity($professional, $this->request->getData());
-            if ($this->Professionals->save($professional)) {
-                $this->Flash->success(__('The professional has been saved.'));
-
-                return $this->redirect(['action' => 'index']);
-            }
-            $this->Flash->error(__('The professional could not be saved. Please, try again.'));
-        }
-        $cities = $this->Professionals->Cities->find('list', ['limit' => 200]);
-        $this->set(compact('professional', 'cities'));
-    }
-
-    /**
-     * Delete method
-     *
-     * @param string|null $id Professional id.
-     * @return \Cake\Http\Response|null Redirects to index.
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
-     */
-    public function delete($id = null)
-    {
-        $this->request->allowMethod(['post', 'delete']);
-        $professional = $this->Professionals->get($id);
-        if ($this->Professionals->delete($professional)) {
-            $this->Flash->success(__('The professional has been deleted.'));
-        } else {
-            $this->Flash->error(__('The professional could not be deleted. Please, try again.'));
-        }
-
-        return $this->redirect(['action' => 'index']);
     }
 }
