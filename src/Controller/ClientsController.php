@@ -40,19 +40,28 @@ class ClientsController extends AppController
             try {
                 $image = $this->request->getData('image');
                 $client = $this->Clients->patchEntity($client, $this->request->getData());
-                if (isset($image)) {
+                $clientUpdate = $this->Clients->newEntity();
+                $clientUpdate->id = $client['id'];
+                $clientUpdate->name = $client['name'];
+                $clientUpdate->phone = $client['phone'];
+                $clientUpdate->document = $client['document'];
+                $clientUpdate->date_birth = $client['date_birth'];
+                $clientUpdate->gender = $client['gender'];
+
+                if (isset($image) && $image != '') {
                     $base64 = $image;
                     $output_file = WWW_ROOT . 'img' . DS . 'client-' . $client['id'] . '.jpeg';
+                    $dns_path = DS . 'img' . DS . 'client-' . $client['id'] . '.jpeg';
+
                     $ifp = fopen($output_file, 'wb');
                     fwrite($ifp, base64_decode($base64));
                     fclose($ifp);
-                    $client['image_path'] = $output_file;
-                }
-                else{
-                    $client['image_path'] = $image;
+                    $clientUpdate->image_path = $dns_path;
+                } else {
+                    $clientUpdate->image_path = $client['image_path'];
                 }
 
-                if ($this->Clients->save($client)) {
+                if ($this->Clients->save($clientUpdate)) {
                     //sucesso                
                     $errorMessage = '';
                 } else {

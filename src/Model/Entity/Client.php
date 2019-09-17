@@ -13,12 +13,13 @@ use Cake\ORM\Entity;
  * @property string $phone
  * @property string $document
  * @property \Cake\I18n\FrozenDate $date_birth
- * @property string $genre
+ * @property string $gender
  * @property float $latitude
  * @property float $longitude
  * @property \Cake\I18n\FrozenTime $created
  * @property \Cake\I18n\FrozenTime $modified
  * @property bool $active
+ * @property string $image_path
  *
  * @property \App\Model\Entity\User $user
  * @property \App\Model\Entity\ClientsAddres[] $clients_address
