@@ -7,7 +7,7 @@ class ServicesController extends AppController
 { 
     public function index()
     {
-        $services = $this->Service->find('all')
+        $services = $this->Services->find('all')
         ->where(['Services.active = ' => true]);
 
         $this->set([
@@ -18,8 +18,8 @@ class ServicesController extends AppController
 
     public function getBySubcategory($idSubcategory = null)
     {
-        $services = $this->Service->find('all')
-        ->where(['Services.active = ' => true])
+        $services = $this->Services->find('all')
+        ->where(['Services.active = ' => 1])
         ->andWhere(['Services.subcategory_id = ' => $idSubcategory]);
 
         $this->set([
