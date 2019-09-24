@@ -53,16 +53,32 @@ class UsersController extends AppController
 
     public function view($id)
     {
-        $Clients = TableRegistry::getTableLocator()->get('Clients');
-        $queryClient = $Clients->find('all')
-            ->where(['Clients.user_id = ' => $id])
-            ->contain(['Users'])
+        $queryUser = $this->Users->find('all')
+            ->where(['Users.id = ' => $id])
             ->limit(1);
-        $clientRow = $queryClient->first();
+        $userRow = $queryUser->first();
+
+        if (isset($userRow)) {
+            $Clients = TableRegistry::getTableLocator()->get('Clients');
+            $Professionals = TableRegistry::getTableLocator()->get('Professionals');
+
+            $queryClient = $Clients->find('all')
+                ->where(['Clients.user_id = ' => $id])
+                ->limit(1);
+            $clientRow = $queryClient->first();
+
+            $queryProfessional = $Professionals->find('all')
+                ->where(['Professionals.user_id = ' => $id])
+                ->limit(1);
+            $professionalRow = $queryProfessional->first();
+
+            $userRow['client'] = $clientRow;
+            $userRow['professional'] = $professionalRow;
+        }
 
         $this->set([
-            'client' => $clientRow,
-            '_serialize' => ['client']
+            'user' => $userRow,
+            '_serialize' => ['user']
         ]);
     }
 
@@ -130,6 +146,7 @@ class UsersController extends AppController
                     $errorMessage = $this->validateClient($requestData);
                 } else {
                     //validações do professional
+                    $errorMessage = 'Tipo de Cadastro não implementado';
                 }
             }
 
