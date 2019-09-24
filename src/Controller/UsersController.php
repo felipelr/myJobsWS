@@ -49,9 +49,7 @@ class UsersController extends AppController
     }
 
     public function index()
-    {
-        
-    }
+    { }
 
     public function view($id)
     {
@@ -259,6 +257,54 @@ class UsersController extends AppController
                 'id' => $requestData['socialMidiaId'],
                 'type' => $requestData['socialMidiaType'],
                 '_serialize' => ['error', 'errorMessage', 'id', 'type']
+            ]);
+        }
+    }
+
+    public function changePassword()
+    {
+        $errorMessage = '';
+        $user = null;
+        if ($this->request->is('post')) {
+            $id = $this->request->getData('id');
+            $currentPassword = $this->request->getData('currentPassword');
+            $newPassword = $this->request->getData('newPassword');
+
+            if (!(isset($id) && isset($currentPassword) && isset($newPassword))) {
+                $errorMessage = 'Os dados informados estão incompletos.';
+            }
+
+            if ($errorMessage == '') {
+                $user = $this->Users->get($id);
+                if (isset($user)) {
+                    $hashNewPassword = password_hash($newPassword, PASSWORD_BCRYPT, ["cost" => 10]);
+
+                    if (password_verify($currentPassword, $user->password)) {
+                        $newUser = $this->Users->newEntity();
+                        $newUser->id = $id;
+                        $newUser->password = $hashNewPassword;
+                        if (!$this->Users->save($newUser)) {
+                            $errorMessage = 'Não foi possível alterar a senha.';
+                        }
+                    } else {
+                        $errorMessage = 'A senha atual informada é inválida.';
+                    }
+                } else {
+                    $errorMessage = 'Usuário não localizado.';
+                }
+            }
+        }
+
+        if ($errorMessage == '') {
+            $this->set([
+                'user' => $user,
+                '_serialize' => ['user']
+            ]);
+        } else {
+            $this->set([
+                'error' => true,
+                'errorMessage' => $errorMessage,
+                '_serialize' => ['error', 'errorMessage']
             ]);
         }
     }
