@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Model\Table;
 
 use Cake\ORM\Query;
@@ -47,16 +48,9 @@ class ProfessionalsTable extends Table
 
         $this->addBehavior('Timestamp');
 
-        $this->belongsTo('Cities', [
-            'foreignKey' => 'city_id'
-        ]); 
-        
-        $this->belongsTo('Subcategories', [
-            'foreignKey' => 'subcategoria_id'
-        ]);
         $this->belongsTo('Users', [
             'foreignKey' => 'user_id'
-        ]); 
+        ]);
         $this->hasMany('Highlights', [
             'foreignKey' => 'professional_id'
         ]);
@@ -92,16 +86,15 @@ class ProfessionalsTable extends Table
             ->allowEmptyString('name', false);
 
         $validator
-            ->integer('description')
+            ->scalar('description')
+            ->maxLength('description', 255)
             ->allowEmptyString('description');
 
         $validator
-            ->date('date_birth')
-            ->allowEmptyDate('date_birth');
-
-        $validator
-            ->email('email')
-            ->allowEmptyString('email');
+            ->scalar('phone')
+            ->maxLength('phone', 255)
+            ->requirePresence('phone', 'create')
+            ->allowEmptyString('phone', false);
 
         $validator
             ->scalar('photo')
@@ -109,31 +102,18 @@ class ProfessionalsTable extends Table
             ->allowEmptyString('photo');
 
         $validator
-            ->scalar('street')
-            ->maxLength('street', 150)
-            ->requirePresence('street', 'create')
-            ->allowEmptyString('street', false);
+            ->scalar('document')
+            ->maxLength('document', 100)
+            ->requirePresence('document', 'create')
+            ->allowEmptyString('document', false);
 
         $validator
-            ->scalar('street_number')
-            ->maxLength('street_number', 50)
-            ->allowEmptyString('street_number');
+            ->date('date_birth')
+            ->allowEmptyDate('date_birth')
+            ->allowEmptyDate('date_birth', false);
 
         $validator
-            ->scalar('neighborhood')
-            ->maxLength('neighborhood', 150)
-            ->requirePresence('neighborhood', 'create')
-            ->allowEmptyString('neighborhood', false);
-
-        $validator
-            ->numeric('latitude')
-            ->allowEmptyString('latitude');
-
-        $validator
-            ->numeric('longitude')
-            ->allowEmptyString('longitude');
-
-        $validator
+            ->boolean('active')
             ->allowEmptyString('active', false);
 
         return $validator;
@@ -148,9 +128,6 @@ class ProfessionalsTable extends Table
      */
     public function buildRules(RulesChecker $rules)
     {
-        $rules->add($rules->isUnique(['email']));
-        $rules->add($rules->existsIn(['city_id'], 'Cities'));
-        $rules->add($rules->existsIn(['subcategoria_id'], 'Subcategories'));
         $rules->add($rules->existsIn(['user_id'], 'Users'));
 
         return $rules;

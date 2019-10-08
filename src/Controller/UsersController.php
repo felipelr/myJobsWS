@@ -128,6 +128,33 @@ class UsersController extends AppController
         return $errorMessage;
     }
 
+    function validateProfessional($requestData)
+    {
+        $errorMessage = '';
+
+        if (!(isset($requestData['name']) && $requestData['name'] != '')) {
+            $errorMessage = 'O nome é inválido.';
+        }
+
+        if (!(isset($requestData['phone']) && $requestData['phone'] != '')) {
+            $errorMessage = 'O telefone é inválido.';
+        }
+
+        if (!(isset($requestData['document']) && $requestData['document'] != '')) {
+            $errorMessage = 'O CPF/CNPJ é inválido.';
+        }
+
+        if (!(isset($requestData['date_birth']) && $requestData['date_birth'] != '')) {
+            $errorMessage = 'A data de nascimento é inválido.';
+        }
+
+        if (!(isset($requestData['gender']) && $requestData['gender'] != '')) {
+            $errorMessage = 'O gênero é inválido.';
+        }
+
+        return $errorMessage;
+    }
+
     public function add()
     {
         $user = $this->Users->newEntity();
@@ -146,7 +173,7 @@ class UsersController extends AppController
                     $errorMessage = $this->validateClient($requestData);
                 } else {
                     //validações do professional
-                    $errorMessage = 'Tipo de Cadastro não implementado';
+                    $errorMessage =  $this->validateProfessional($requestData);
                 }
             }
 
@@ -171,10 +198,7 @@ class UsersController extends AppController
 
                             $client['user_id'] = $user['id'];
 
-                            if ($client['name'] == '') {
-                                //not ok
-                                $errorMessage = 'O nome não foi informado.';
-                            } else if ($Clients->save($client)) {
+                            if ($Clients->save($client)) {
                                 //ok
                                 $errorMessage = '';
                                 $newUser = $Clients->get($client['id'], [
@@ -183,7 +207,26 @@ class UsersController extends AppController
                             } else {
                                 //not ok
                                 $this->Users->delete($user);
-                                $errorMessage = 'Não foi possível criar o usuário.' . json_encode($client->getErrors());
+                                $errorMessage = 'Não foi possível criar o usuário.';
+                            }
+                        } else {
+                            $Professionals = TableRegistry::getTableLocator()->get('Professionals');
+                            $professional = $Professionals->newEntity();
+                            $professional = $Professionals->patchEntity($professional, $requestData);
+
+                            $professional['user_id'] = $user['id'];
+
+                            if ($Professionals->save($professional)) {
+                                //ok
+                                $errorMessage = '';
+                                $newUser = $Professionals->get($professional['id'], [
+                                    'contain' => ['Users']
+                                ]);
+                            } else {
+                                //not ok
+                                $this->Users->delete($user);
+                                $errorMessage = 'Não foi possível criar o usuário.' . json_encode($professional->getErrors());
+                                //$errorMessage = 'Não foi possível criar o usuário.';
                             }
                         }
                     } else {
@@ -211,7 +254,9 @@ class UsersController extends AppController
     public function socialMidiaVerify()
     {
         $errorMessage = '';
+        $userRow = null;
         $clientRow = null;
+        $professionalRow = null;
         if ($this->request->is('post')) {
             $requestData = $this->request->getData();
 
@@ -224,47 +269,50 @@ class UsersController extends AppController
             }
 
             if ($errorMessage == '') {
+                $queryUsers = null;
+
                 if ($requestData['socialMidiaType'] == 'facebook') {
                     $queryUsers = $this->Users->find('all')
                         ->where(['Users.facebook_id = ' => $requestData['socialMidiaId']])
                         ->limit(1);
-
-                    if ($queryUsers->count() > 0) {
-                        $userRow = $queryUsers->first();
-                        $Clients = TableRegistry::getTableLocator()->get('Clients');
-                        $queryClient = $Clients->find('all')
-                            ->where(['Clients.user_id = ' => $userRow['id']])
-                            ->contain(['Users'])
-                            ->limit(1);
-                        $clientRow = $queryClient->first();
-                    } else {
-                        $errorMessage = 'Usuário não encontrado.';
-                    }
                 } else if ($requestData['socialMidiaType'] == 'google') {
                     $queryUsers = $this->Users->find('all')
                         ->where(['Users.google_id = ' => $requestData['socialMidiaId']])
                         ->limit(1);
+                } else {
+                    $errorMessage = 'Tipo de social mídia inválido.';
+                }
 
+                if ($queryUsers != null) {
                     if ($queryUsers->count() > 0) {
                         $userRow = $queryUsers->first();
                         $Clients = TableRegistry::getTableLocator()->get('Clients');
+                        $Professionals = TableRegistry::getTableLocator()->get('Professionals');
+
                         $queryClient = $Clients->find('all')
                             ->where(['Clients.user_id = ' => $userRow['id']])
                             ->contain(['Users'])
                             ->limit(1);
                         $clientRow = $queryClient->first();
+
+                        $queryProfessional = $Professionals->find('all')
+                            ->where(['Professionals.user_id = ' => $userRow['id']])
+                            ->contain(['Users'])
+                            ->limit(1);
+                        $professionalRow = $queryProfessional->first();
                     } else {
                         $errorMessage = 'Usuário não encontrado.';
                     }
-                } else {
-                    $errorMessage = 'Tipo de social mídia inválido.';
                 }
             }
         }
 
+        $userRow['client'] = $clientRow;
+        $userRow['professional'] = $professionalRow;
+
         if ($errorMessage == '') {
             $this->set([
-                'user' => $clientRow,
+                'user' => $userRow,
                 '_serialize' => ['user']
             ]);
         } else {

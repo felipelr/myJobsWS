@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Model\Table;
 
 use Cake\ORM\Query;
@@ -88,14 +89,6 @@ class ClientsTable extends Table
             ->scalar('gender')
             ->maxLength('gender', 255)
             ->allowEmptyString('gender', false);
-
-        $validator
-            ->numeric('latitude')
-            ->allowEmptyString('latitude', false);
-
-        $validator
-            ->numeric('longitude')
-            ->allowEmptyString('longitude', false);
 
         $validator
             ->boolean('active')

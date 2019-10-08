@@ -56,9 +56,9 @@ class ClientsController extends AppController
                     $ifp = fopen($output_file, 'wb');
                     fwrite($ifp, base64_decode($base64));
                     fclose($ifp);
-                    $clientUpdate->image_path = $dns_path;
+                    $clientUpdate->photo = $dns_path;
                 } else {
-                    $clientUpdate->image_path = $client['image_path'];
+                    $clientUpdate->photo = $client['photo'];
                 }
 
                 if ($this->Clients->save($clientUpdate)) {
