@@ -14,12 +14,10 @@ use Cake\ORM\Entity;
  * @property string $document
  * @property \Cake\I18n\FrozenDate $date_birth
  * @property string $gender
- * @property float $latitude
- * @property float $longitude
+ * @property string $photo
  * @property \Cake\I18n\FrozenTime $created
  * @property \Cake\I18n\FrozenTime $modified
  * @property bool $active
- * @property string $image_path
  *
  * @property \App\Model\Entity\User $user
  * @property \App\Model\Entity\ClientsAddres[] $clients_address
@@ -42,13 +40,11 @@ class Client extends Entity
         'document' => true,
         'date_birth' => true,
         'gender' => true,
-        'latitude' => true,
-        'longitude' => true,
+        'photo' => true,
         'created' => true,
         'modified' => true,
         'active' => true,
         'user' => true,
-        'clients_address' => true,
-        'image_path' => true
+        'clients_address' => true
     ];
 }

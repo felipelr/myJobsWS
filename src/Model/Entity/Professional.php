@@ -7,26 +7,20 @@ use Cake\ORM\Entity;
  * Professional Entity
  *
  * @property int $id
- * @property int|null $city_id
- * @property int|null $subcategoria_id
  * @property int|null $user_id
  * @property string $name
- * @property int|null $description
+ * @property string|null $description
+ * @property string|null $document
  * @property \Cake\I18n\FrozenDate|null $date_birth
- * @property string|null $email
  * @property string|null $photo
- * @property string $street
- * @property string|null $street_number
- * @property string $neighborhood
- * @property float|null $latitude
- * @property float|null $longitude
  * @property int $active
  * @property \Cake\I18n\FrozenTime|null $created
  * @property \Cake\I18n\FrozenTime|null $modified
  *
- * @property \App\Model\Entity\City $city
+ * @property \App\Model\Entity\User $user
  * @property \App\Model\Entity\ProfessionalPhone[] $professional_phones
  * @property \App\Model\Entity\Rating[] $ratings
+ * @property \App\Model\Entity\ProfessionalsAddres[] $professionals_address
  */
 class Professional extends Entity
 {
@@ -40,24 +34,18 @@ class Professional extends Entity
      * @var array
      */
     protected $_accessible = [
-        'city_id' => true,
-        'subcategoria_id' => true,
         'user_id' => true,
         'name' => true,
         'description' => true,
+        'document' => true,
         'date_birth' => true,
-        'email' => true,
         'photo' => true,
-        'street' => true,
-        'street_number' => true,
-        'neighborhood' => true,
-        'latitude' => true,
-        'longitude' => true,
         'active' => true,
         'created' => true,
         'modified' => true,
-        'city' => true,
+        'user' => true,
         'professional_phones' => true,
+        'professionals_address' => true,
         'ratings' => true
     ];
 }
