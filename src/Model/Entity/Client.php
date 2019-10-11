@@ -20,7 +20,6 @@ use Cake\ORM\Entity;
  * @property bool $active
  *
  * @property \App\Model\Entity\User $user
- * @property \App\Model\Entity\ClientsAddres[] $clients_address
  */
 class Client extends Entity
 {
@@ -45,6 +44,5 @@ class Client extends Entity
         'modified' => true,
         'active' => true,
         'user' => true,
-        'clients_address' => true
     ];
 }

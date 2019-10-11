@@ -12,8 +12,8 @@ use Cake\ORM\Entity;
  * @property int|null $ibge_code
  *
  * @property \App\Model\Entity\State $state
- * @property \App\Model\Entity\Professional[] $professionals
- * @property \App\Model\Entity\UserAddres[] $user_address
+ * @property \App\Model\Entity\ClientsAddres[] $clients_address
+ * @property \App\Model\Entity\ProfessionalsAddres[] $professionals_address
  */
 class City extends Entity
 {
@@ -31,7 +31,7 @@ class City extends Entity
         'name' => true,
         'ibge_code' => true,
         'state' => true,
-        'professionals' => true,
-        'user_address' => true
+        'clients_address' => true,
+        'professionals_address' => true
     ];
 }

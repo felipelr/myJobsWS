@@ -11,7 +11,6 @@ use Cake\Validation\Validator;
  * Clients Model
  *
  * @property \App\Model\Table\UsersTable|\Cake\ORM\Association\BelongsTo $Users
- * @property \App\Model\Table\ClientsAddressTable|\Cake\ORM\Association\HasMany $ClientsAddress
  *
  * @method \App\Model\Entity\Client get($primaryKey, $options = [])
  * @method \App\Model\Entity\Client newEntity($data = null, array $options = [])
@@ -45,9 +44,6 @@ class ClientsTable extends Table
         $this->belongsTo('Users', [
             'foreignKey' => 'user_id',
             'joinType' => 'INNER'
-        ]);
-        $this->hasMany('ClientsAddress', [
-            'foreignKey' => 'client_id'
         ]);
     }
 
