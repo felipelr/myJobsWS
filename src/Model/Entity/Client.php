@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Model\Entity;
 
 use Cake\ORM\Entity;
@@ -43,6 +42,6 @@ class Client extends Entity
         'created' => true,
         'modified' => true,
         'active' => true,
-        'user' => true,
+        'user' => true
     ];
 }

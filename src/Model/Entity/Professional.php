@@ -18,9 +18,11 @@ use Cake\ORM\Entity;
  * @property \Cake\I18n\FrozenTime|null $modified
  *
  * @property \App\Model\Entity\User $user
+ * @property \App\Model\Entity\Highlight[] $highlights
  * @property \App\Model\Entity\ProfessionalPhone[] $professional_phones
- * @property \App\Model\Entity\Rating[] $ratings
+ * @property \App\Model\Entity\ProfessionalService[] $professional_services
  * @property \App\Model\Entity\ProfessionalsAddres[] $professionals_address
+ * @property \App\Model\Entity\Rating[] $ratings
  */
 class Professional extends Entity
 {
@@ -44,7 +46,9 @@ class Professional extends Entity
         'created' => true,
         'modified' => true,
         'user' => true,
+        'highlights' => true,
         'professional_phones' => true,
+        'professional_services' => true,
         'professionals_address' => true,
         'ratings' => true
     ];

@@ -20,15 +20,6 @@ class ClientsController extends AppController
         $this->loadComponent('RequestHandler');
     }
 
-    public function view($id = null)
-    {
-        $client = $this->Clients->get($id, [
-            'contain' => ['Users', 'ClientsAddress']
-        ]);
-
-        $this->set('client', $client);
-    }
-
     public function edit($id = null)
     {
         $client = $this->Clients->get($id, [

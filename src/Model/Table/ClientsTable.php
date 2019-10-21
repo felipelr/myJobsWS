@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Model\Table;
 
 use Cake\ORM\Query;
@@ -11,6 +10,7 @@ use Cake\Validation\Validator;
  * Clients Model
  *
  * @property \App\Model\Table\UsersTable|\Cake\ORM\Association\BelongsTo $Users
+ * @property |\Cake\ORM\Association\HasMany $ClientsAddresses
  *
  * @method \App\Model\Entity\Client get($primaryKey, $options = [])
  * @method \App\Model\Entity\Client newEntity($data = null, array $options = [])
@@ -44,6 +44,9 @@ class ClientsTable extends Table
         $this->belongsTo('Users', [
             'foreignKey' => 'user_id',
             'joinType' => 'INNER'
+        ]);
+        $this->hasMany('ClientsAddresses', [
+            'foreignKey' => 'client_id'
         ]);
     }
 
@@ -85,6 +88,12 @@ class ClientsTable extends Table
             ->scalar('gender')
             ->maxLength('gender', 255)
             ->allowEmptyString('gender', false);
+
+        $validator
+            ->scalar('photo')
+            ->maxLength('photo', 255)
+            ->requirePresence('photo', 'create')
+            ->allowEmptyString('photo', false);
 
         $validator
             ->boolean('active')

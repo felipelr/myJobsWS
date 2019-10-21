@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Model\Table;
 
 use Cake\ORM\Query;
@@ -10,13 +9,12 @@ use Cake\Validation\Validator;
 /**
  * Professionals Model
  *
- * @property \App\Model\Table\CitiesTable|\Cake\ORM\Association\BelongsTo $Cities 
- * @property |\Cake\ORM\Association\BelongsTo $Subcategories
- * @property |\Cake\ORM\Association\BelongsTo $Users 
- * @property |\Cake\ORM\Association\HasMany $Highlights
+ * @property \App\Model\Table\UsersTable|\Cake\ORM\Association\BelongsTo $Users
+ * @property |\Cake\ORM\Association\HasMany $Calls
+ * @property \App\Model\Table\HighlightsTable|\Cake\ORM\Association\HasMany $Highlights
  * @property \App\Model\Table\ProfessionalPhonesTable|\Cake\ORM\Association\HasMany $ProfessionalPhones
- * @property |\Cake\ORM\Association\HasMany $ProfessionalServices
- * @property |\Cake\ORM\Association\HasMany $ProfessionalsAddress
+ * @property \App\Model\Table\ProfessionalServicesTable|\Cake\ORM\Association\HasMany $ProfessionalServices
+ * @property |\Cake\ORM\Association\HasMany $ProfessionalsAddresses
  * @property \App\Model\Table\RatingsTable|\Cake\ORM\Association\HasMany $Ratings
  *
  * @method \App\Model\Entity\Professional get($primaryKey, $options = [])
@@ -51,6 +49,9 @@ class ProfessionalsTable extends Table
         $this->belongsTo('Users', [
             'foreignKey' => 'user_id'
         ]);
+        $this->hasMany('Calls', [
+            'foreignKey' => 'professional_id'
+        ]);
         $this->hasMany('Highlights', [
             'foreignKey' => 'professional_id'
         ]);
@@ -60,7 +61,7 @@ class ProfessionalsTable extends Table
         $this->hasMany('ProfessionalServices', [
             'foreignKey' => 'professional_id'
         ]);
-        $this->hasMany('ProfessionalsAddress', [
+        $this->hasMany('ProfessionalsAddresses', [
             'foreignKey' => 'professional_id'
         ]);
         $this->hasMany('Ratings', [
@@ -87,14 +88,16 @@ class ProfessionalsTable extends Table
 
         $validator
             ->scalar('description')
-            ->maxLength('description', 255)
             ->allowEmptyString('description');
 
         $validator
-            ->scalar('phone')
-            ->maxLength('phone', 255)
-            ->requirePresence('phone', 'create')
-            ->allowEmptyString('phone', false);
+            ->scalar('document')
+            ->maxLength('document', 50)
+            ->allowEmptyString('document');
+
+        $validator
+            ->date('date_birth')
+            ->allowEmptyDate('date_birth');
 
         $validator
             ->scalar('photo')
@@ -102,18 +105,6 @@ class ProfessionalsTable extends Table
             ->allowEmptyString('photo');
 
         $validator
-            ->scalar('document')
-            ->maxLength('document', 100)
-            ->requirePresence('document', 'create')
-            ->allowEmptyString('document', false);
-
-        $validator
-            ->date('date_birth')
-            ->allowEmptyDate('date_birth')
-            ->allowEmptyDate('date_birth', false);
-
-        $validator
-            ->boolean('active')
             ->allowEmptyString('active', false);
 
         return $validator;
