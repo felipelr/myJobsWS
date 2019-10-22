@@ -14,28 +14,6 @@ use Cake\ORM\TableRegistry;
  */
 class ClientsAddressesController extends AppController
 {
-    /**
-     * Index method
-     *
-     * @return \Cake\Http\Response|void
-     */
-    public function index()
-    {
-        $this->paginate = [
-            'contain' => ['Clients', 'Cities']
-        ];
-        $clientsAddresses = $this->paginate($this->ClientsAddresses);
-
-        $this->set(compact('clientsAddresses'));
-    }
-
-    /**
-     * View method
-     *
-     * @param string|null $id Clients Address id.
-     * @return \Cake\Http\Response|void
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
-     */
     public function view($client_id = null)
     {
         $clientsAddresses = [];
@@ -54,11 +32,6 @@ class ClientsAddressesController extends AppController
         ]);
     }
 
-    /**
-     * Add method
-     *
-     * @return \Cake\Http\Response|null Redirects on successful add, renders view otherwise.
-     */
     public function add()
     {
         $errorMessage = '';
@@ -81,8 +54,7 @@ class ClientsAddressesController extends AppController
             } else {
                 $errorMessage = 'Não foi possível inserir o endereço.' . json_encode($clientsAddress->getErrors());
             }
-        }
-        else {
+        } else {
             $errorMessage = 'Método não implementado.';
         }
 
@@ -100,49 +72,87 @@ class ClientsAddressesController extends AppController
         }
     }
 
-    /**
-     * Edit method
-     *
-     * @param string|null $id Clients Address id.
-     * @return \Cake\Http\Response|null Redirects on successful edit, renders view otherwise.
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
-     */
     public function edit($id = null)
     {
-        $clientsAddress = $this->ClientsAddresses->get($id, [
-            'contain' => []
-        ]);
+        $errorMessage = '';
+        $client = null;
         if ($this->request->is(['patch', 'post', 'put'])) {
+            $clientsAddress = $this->ClientsAddresses->newEntity();
             $clientsAddress = $this->ClientsAddresses->patchEntity($clientsAddress, $this->request->getData());
-            if ($this->ClientsAddresses->save($clientsAddress)) {
-                $this->Flash->success(__('The clients address has been saved.'));
+            $clientsAddress->id = $id;
+            unset($clientsAddress['city']);
 
-                return $this->redirect(['action' => 'index']);
+            if (!isset($clientsAddress['latitude'])) {
+                $clientsAddress['latitude'] = 0;
+                $clientsAddress['longitude'] = 0;
             }
-            $this->Flash->error(__('The clients address could not be saved. Please, try again.'));
+
+            if ($this->ClientsAddresses->save($clientsAddress)) {
+                $Clients = TableRegistry::getTableLocator()->get('Clients');
+                $client = $Clients->find('all')
+                    ->where(['Clients.id = ' => $clientsAddress['client_id']])
+                    ->contain(['Users'])
+                    ->first();
+                if (isset($client['id'])) {
+                    $client['clientsAddresses'] = $this->ClientsAddresses->find('all')
+                        ->where(['ClientsAddresses.client_id = ' => $client['id']])
+                        ->contain(['Cities', 'Cities.States'])
+                        ->all();
+                }
+            } else {
+                $errorMessage = 'Não foi possível alterar o endereço.' . json_encode($clientsAddress->getErrors());
+            }
+        } else {
+            $errorMessage = 'Método não implementado.';
         }
-        $clients = $this->ClientsAddresses->Clients->find('list', ['limit' => 200]);
-        $cities = $this->ClientsAddresses->Cities->find('list', ['limit' => 200]);
-        $this->set(compact('clientsAddress', 'clients', 'cities'));
+
+        if ($errorMessage == '') {
+            $this->set([
+                'client' => $client,
+                '_serialize' => ['client']
+            ]);
+        } else {
+            $this->set([
+                'error' => true,
+                'errorMessage' => $errorMessage,
+                '_serialize' => ['error', 'errorMessage']
+            ]);
+        }
     }
 
-    /**
-     * Delete method
-     *
-     * @param string|null $id Clients Address id.
-     * @return \Cake\Http\Response|null Redirects to index.
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
-     */
     public function delete($id = null)
     {
+        $errorMessage = '';
+        $client = null;
         $this->request->allowMethod(['post', 'delete']);
         $clientsAddress = $this->ClientsAddresses->get($id);
         if ($this->ClientsAddresses->delete($clientsAddress)) {
-            $this->Flash->success(__('The clients address has been deleted.'));
+            $Clients = TableRegistry::getTableLocator()->get('Clients');
+            $client = $Clients->find('all')
+                ->where(['Clients.id = ' => $clientsAddress['client_id']])
+                ->contain(['Users'])
+                ->first();
+            if (isset($client['id'])) {
+                $client['clientsAddresses'] = $this->ClientsAddresses->find('all')
+                    ->where(['ClientsAddresses.client_id = ' => $client['id']])
+                    ->contain(['Cities', 'Cities.States'])
+                    ->all();
+            }
         } else {
-            $this->Flash->error(__('The clients address could not be deleted. Please, try again.'));
+            $errorMessage = 'Não foi possível excluir o endereço.' . json_encode($clientsAddress->getErrors());
         }
 
-        return $this->redirect(['action' => 'index']);
+        if ($errorMessage == '') {
+            $this->set([
+                'client' => $client,
+                '_serialize' => ['client']
+            ]);
+        } else {
+            $this->set([
+                'error' => true,
+                'errorMessage' => $errorMessage,
+                '_serialize' => ['error', 'errorMessage']
+            ]);
+        }
     }
 }

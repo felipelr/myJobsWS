@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Controller\AppController;
 use Exception;
+use Cake\ORM\TableRegistry;
 
 /**
  * Clients Controller
@@ -23,7 +24,7 @@ class ClientsController extends AppController
     public function edit($id = null)
     {
         $client = $this->Clients->get($id, [
-            'contain' => []
+            'contain' => ['Users']
         ]);
 
         $errorMessage = '';
@@ -65,6 +66,12 @@ class ClientsController extends AppController
         }
 
         if ($errorMessage == '') {
+            $ClientsAddresses = TableRegistry::getTableLocator()->get('ClientsAddresses');
+            $client['clientsAddresses'] = $ClientsAddresses->find('all')
+                ->where(['ClientsAddresses.client_id = ' => $client['id']])
+                ->contain(['Cities', 'Cities.States'])
+                ->all();
+
             $this->set([
                 'client' => $client,
                 '_serialize' => ['client']
