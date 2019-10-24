@@ -22,7 +22,6 @@ class ClientsAddressesController extends AppController
             ->contain(['Cities', 'Cities.States']);
 
         foreach ($query as $row) {
-            //debug($row->created);
             $clientsAddresses[] = $row;
         }
 

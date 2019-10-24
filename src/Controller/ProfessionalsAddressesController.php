@@ -2,6 +2,7 @@
 namespace App\Controller;
 
 use App\Controller\AppController;
+use Cake\ORM\TableRegistry;
 
 /**
  * ProfessionalsAddresses Controller
@@ -12,102 +13,144 @@ use App\Controller\AppController;
  */
 class ProfessionalsAddressesController extends AppController
 {
-    /**
-     * Index method
-     *
-     * @return \Cake\Http\Response|void
-     */
-    public function index()
+    public function view($professional_id = null)
     {
-        $this->paginate = [
-            'contain' => ['Professionals', 'Cities']
-        ];
-        $professionalsAddresses = $this->paginate($this->ProfessionalsAddresses);
+        $professionalsAddress = [];
+        $query = $this->ProfessionalsAddresses->find('all')
+            ->where(['ProfessionalsAddresses.professional_id = ' => $professional_id])
+            ->contain(['Cities', 'Cities.States']);
 
-        $this->set(compact('professionalsAddresses'));
-    }
+        foreach ($query as $row) {
+            $professionalsAddress[] = $row;
+        }
 
-    /**
-     * View method
-     *
-     * @param string|null $id Professionals Address id.
-     * @return \Cake\Http\Response|void
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
-     */
-    public function view($id = null)
-    {
-        $professionalsAddress = $this->ProfessionalsAddresses->get($id, [
-            'contain' => ['Professionals', 'Cities']
+        $this->set([
+            'professionalsAddresses' => $professionalsAddress,
+            '_serialize' => ['professionalsAddresses']
         ]);
-
-        $this->set('professionalsAddress', $professionalsAddress);
     }
-
-    /**
-     * Add method
-     *
-     * @return \Cake\Http\Response|null Redirects on successful add, renders view otherwise.
-     */
+    
     public function add()
     {
-        $professionalsAddress = $this->ProfessionalsAddresses->newEntity();
+        $errorMessage = '';
+        $professional = null;
         if ($this->request->is('post')) {
+            $professionalsAddress = $this->ProfessionalsAddresses->newEntity();
             $professionalsAddress = $this->ProfessionalsAddresses->patchEntity($professionalsAddress, $this->request->getData());
             if ($this->ProfessionalsAddresses->save($professionalsAddress)) {
-                $this->Flash->success(__('The professionals address has been saved.'));
-
-                return $this->redirect(['action' => 'index']);
+                $Professionals = TableRegistry::getTableLocator()->get('Professionals');
+                $professional = $Professionals->find('all')
+                    ->where(['Professionals.id = ' => $professionalsAddress['professional_id']])
+                    ->contain(['Users'])
+                    ->first();
+                if (isset($professional['id'])) {
+                    $professional['professionalsAddresses'] = $this->ProfessionalsAddresses->find('all')
+                        ->where(['ProfessionalsAddresses.professional_id = ' => $professional['id']])
+                        ->contain(['Cities', 'Cities.States'])
+                        ->all();
+                }
+            } else {
+                $errorMessage = 'Não foi possível inserir o endereço.' . json_encode($professionalsAddress->getErrors());
             }
-            $this->Flash->error(__('The professionals address could not be saved. Please, try again.'));
+        } else {
+            $errorMessage = 'Método não implementado.';
         }
-        $professionals = $this->ProfessionalsAddresses->Professionals->find('list', ['limit' => 200]);
-        $cities = $this->ProfessionalsAddresses->Cities->find('list', ['limit' => 200]);
-        $this->set(compact('professionalsAddress', 'professionals', 'cities'));
-    }
 
-    /**
-     * Edit method
-     *
-     * @param string|null $id Professionals Address id.
-     * @return \Cake\Http\Response|null Redirects on successful edit, renders view otherwise.
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
-     */
+        if ($errorMessage == '') {
+            $this->set([
+                'professional' => $professional,
+                '_serialize' => ['professional']
+            ]);
+        } else {
+            $this->set([
+                'error' => true,
+                'errorMessage' => $errorMessage,
+                '_serialize' => ['error', 'errorMessage']
+            ]);
+        }
+    }
+    
     public function edit($id = null)
     {
-        $professionalsAddress = $this->ProfessionalsAddresses->get($id, [
-            'contain' => []
-        ]);
+        $errorMessage = '';
+        $professional = null;
         if ($this->request->is(['patch', 'post', 'put'])) {
+            $professionalsAddress = $this->ProfessionalsAddresses->newEntity();
             $professionalsAddress = $this->ProfessionalsAddresses->patchEntity($professionalsAddress, $this->request->getData());
-            if ($this->ProfessionalsAddresses->save($professionalsAddress)) {
-                $this->Flash->success(__('The professionals address has been saved.'));
+            $professionalsAddress->id = $id;
+            unset($professionalsAddress['city']);
 
-                return $this->redirect(['action' => 'index']);
+            if (!isset($professionalsAddress['latitude'])) {
+                $professionalsAddress['latitude'] = 0;
+                $professionalsAddress['longitude'] = 0;
             }
-            $this->Flash->error(__('The professionals address could not be saved. Please, try again.'));
-        }
-        $professionals = $this->ProfessionalsAddresses->Professionals->find('list', ['limit' => 200]);
-        $cities = $this->ProfessionalsAddresses->Cities->find('list', ['limit' => 200]);
-        $this->set(compact('professionalsAddress', 'professionals', 'cities'));
-    }
 
-    /**
-     * Delete method
-     *
-     * @param string|null $id Professionals Address id.
-     * @return \Cake\Http\Response|null Redirects to index.
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
-     */
+            if ($this->ProfessionalsAddresses->save($professionalsAddress)) {
+                $Professionals = TableRegistry::getTableLocator()->get('Professionals');
+                $professional = $Professionals->find('all')
+                    ->where(['Professionals.id = ' => $professionalsAddress['professional_id']])
+                    ->contain(['Users'])
+                    ->first();
+                if (isset($professional['id'])) {
+                    $professional['professionalsAddresses'] = $this->ProfessionalsAddresses->find('all')
+                        ->where(['ProfessionalsAddresses.professional_id = ' => $professional['id']])
+                        ->contain(['Cities', 'Cities.States'])
+                        ->all();
+                }
+            } else {
+                $errorMessage = 'Não foi possível alterar o endereço.' . json_encode($professionalsAddress->getErrors());
+            }
+        } else {
+            $errorMessage = 'Método não implementado.';
+        }
+
+        if ($errorMessage == '') {
+            $this->set([
+                'professional' => $professional,
+                '_serialize' => ['professional']
+            ]);
+        } else {
+            $this->set([
+                'error' => true,
+                'errorMessage' => $errorMessage,
+                '_serialize' => ['error', 'errorMessage']
+            ]);
+        }
+    }
+    
     public function delete($id = null)
     {
+        $errorMessage = '';
+        $professional = null;
         $this->request->allowMethod(['post', 'delete']);
         $professionalsAddress = $this->ProfessionalsAddresses->get($id);
         if ($this->ProfessionalsAddresses->delete($professionalsAddress)) {
-            $this->Flash->success(__('The professionals address has been deleted.'));
+            $Professionals = TableRegistry::getTableLocator()->get('Professionals');
+            $professional = $Professionals->find('all')
+                ->where(['Professionals.id = ' => $professionalsAddress['professional_id']])
+                ->contain(['Users'])
+                ->first();
+            if (isset($professional['id'])) {
+                $professional['professionalsAddresses'] = $this->ProfessionalsAddresses->find('all')
+                    ->where(['ProfessionalsAddresses.professional_id = ' => $professional['id']])
+                    ->contain(['Cities', 'Cities.States'])
+                    ->all();
+            }
         } else {
-            $this->Flash->error(__('The professionals address could not be deleted. Please, try again.'));
+            $errorMessage = 'Não foi possível excluir o endereço.' . json_encode($professionalsAddress->getErrors());
         }
 
-        return $this->redirect(['action' => 'index']);
+        if ($errorMessage == '') {
+            $this->set([
+                'professional' => $professional,
+                '_serialize' => ['professional']
+            ]);
+        } else {
+            $this->set([
+                'error' => true,
+                'errorMessage' => $errorMessage,
+                '_serialize' => ['error', 'errorMessage']
+            ]);
+        }
     }
 }
