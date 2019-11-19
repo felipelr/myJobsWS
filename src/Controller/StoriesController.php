@@ -42,7 +42,7 @@ class StoriesController extends AppController
                 $story->description = $this->request->getData('description');
 
                 $base64 = $image;
-                $time = time();
+                $time = round(microtime(true) * 10000);
                 $output_file = WWW_ROOT . 'img' . DS . 'story-' . $time . '.jpeg';
                 $dns_path = "http://myjobs.servicos.ws" . DS . 'img' . DS . 'story-' . $time . '.jpeg';
 
