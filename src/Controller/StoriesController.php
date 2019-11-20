@@ -13,13 +13,32 @@ use App\Controller\AppController;
  */
 class StoriesController extends AppController
 {
-    public function view($professional_id = null)
+    public function viewSingle($professional_id = 0, $limit = 10)
     {
         $stories = [];
         $query = $this->Stories->find('all', [
             'order' => ['Stories.id' => 'DESC']
         ])
-            ->where(['Stories.professional_id = ' => $professional_id]);
+            ->where(['Stories.professional_id = ' => $professional_id])
+            ->limit($limit);
+
+        foreach ($query as $row) {
+            $stories[] = $row;
+        }
+
+        $this->set([
+            'stories' => $stories,
+            '_serialize' => ['stories']
+        ]);
+    }
+
+    public function viewAll($limit = 10)
+    {
+        $stories = [];
+        $query = $this->Stories->find('all', [
+            'order' => ['Stories.id' => 'DESC']
+        ])
+            ->limit($limit);
 
         foreach ($query as $row) {
             $stories[] = $row;
