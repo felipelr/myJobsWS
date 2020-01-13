@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Controller\AppController;
+use Exception;
 
 /**
  * Stories Controller
@@ -13,14 +14,17 @@ use App\Controller\AppController;
  */
 class StoriesController extends AppController
 {
-    public function viewSingle($professional_id = 0, $limit = 10)
+    public function viewSingle($professional_id = 0)
     {
+        $limit = $this->request->getQuery('limit', 10);
+        $page = $this->request->getQuery('page', 1);
         $stories = [];
         $query = $this->Stories->find('all', [
             'order' => ['Stories.id' => 'DESC']
         ])
             ->where(['Stories.professional_id = ' => $professional_id])
-            ->limit($limit);
+            ->limit($limit)
+            ->page($page);
 
         foreach ($query as $row) {
             $stories[] = $row;
@@ -32,13 +36,16 @@ class StoriesController extends AppController
         ]);
     }
 
-    public function viewAll($limit = 10)
+    public function viewAll()
     {
+        $limit = $this->request->getQuery('limit', 10);
+        $page = $this->request->getQuery('page', 1);
         $stories = [];
         $query = $this->Stories->find('all', [
             'order' => ['Stories.id' => 'DESC']
         ])
-            ->limit($limit);
+            ->limit($limit)
+            ->page($page);
 
         foreach ($query as $row) {
             $stories[] = $row;
@@ -63,7 +70,7 @@ class StoriesController extends AppController
                 $base64 = $image;
                 $time = round(microtime(true) * 10000);
                 $output_file = WWW_ROOT . 'img' . DS . 'story-' . $time . '.jpeg';
-                $dns_path = "http://myjobs.servicos.ws" . DS . 'img' . DS . 'story-' . $time . '.jpeg';
+                $dns_path = "http://myjobs.servicos.ws/ws" . DS . 'img' . DS . 'story-' . $time . '.jpeg';
 
                 $ifp = fopen($output_file, 'wb');
                 fwrite($ifp, base64_decode($base64));

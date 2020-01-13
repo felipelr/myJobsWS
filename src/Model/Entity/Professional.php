@@ -13,6 +13,7 @@ use Cake\ORM\Entity;
  * @property string|null $document
  * @property \Cake\I18n\FrozenDate|null $date_birth
  * @property string|null $photo
+ * @property string|null $backImage
  * @property int $active
  * @property \Cake\I18n\FrozenTime|null $created
  * @property \Cake\I18n\FrozenTime|null $modified
@@ -42,6 +43,7 @@ class Professional extends Entity
         'document' => true,
         'date_birth' => true,
         'photo' => true,
+        'backImage' => true,
         'active' => true,
         'created' => true,
         'modified' => true,

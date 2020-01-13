@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Model\Table;
 
 use Cake\ORM\Query;
@@ -103,6 +104,11 @@ class ProfessionalsTable extends Table
             ->scalar('photo')
             ->maxLength('photo', 255)
             ->allowEmptyString('photo');
+
+        $validator
+            ->scalar('backImage')
+            ->maxLength('backImage', 255)
+            ->allowEmptyString('backImage');
 
         $validator
             ->allowEmptyString('active', false);

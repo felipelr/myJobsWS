@@ -13,7 +13,7 @@ class ProfessionalsController extends AppController
         parent::initialize();
         $this->loadComponent('RequestHandler');
     }
-     
+
     public function newSuggest()
     {
         $errorMessage = '';
@@ -57,6 +57,7 @@ class ProfessionalsController extends AppController
         if ($this->request->is(['patch', 'post', 'put'])) {
             try {
                 $image = $this->request->getData('image');
+                $imageBackground = $this->request->getData('imageBackground');
                 $professional = $this->Professionals->patchEntity($professional, $this->request->getData());
                 $professionalUpdate = $this->Professionals->newEntity();
                 $professionalUpdate->id = $professional['id'];
@@ -68,7 +69,7 @@ class ProfessionalsController extends AppController
                 if (isset($image) && $image != '') {
                     $base64 = $image;
                     $output_file = WWW_ROOT . 'img' . DS . 'professional-' . $professional['id'] . '.jpeg';
-                    $dns_path = "http://myjobs.servicos.ws" . DS . 'img' . DS . 'professional-' . $professional['id'] . '.jpeg';
+                    $dns_path = "http://myjobs.servicos.ws/ws" . DS . 'img' . DS . 'professional-' . $professional['id'] . '.jpeg';
 
                     $ifp = fopen($output_file, 'wb');
                     fwrite($ifp, base64_decode($base64));
@@ -76,6 +77,19 @@ class ProfessionalsController extends AppController
                     $professionalUpdate->photo = $dns_path;
                 } else {
                     $professionalUpdate->photo = $professional['photo'];
+                }
+
+                if (isset($imageBackground) && $imageBackground != '') {
+                    $base64 = $imageBackground;
+                    $output_file = WWW_ROOT . 'img' . DS . 'professional-back-' . $professional['id'] . '.jpeg';
+                    $dns_path = "http://myjobs.servicos.ws/ws" . DS . 'img' . DS . 'professional-back-' . $professional['id'] . '.jpeg';
+
+                    $ifp = fopen($output_file, 'wb');
+                    fwrite($ifp, base64_decode($base64));
+                    fclose($ifp);
+                    $professionalUpdate->backImage = $dns_path;
+                } else {
+                    $professionalUpdate->backImage = $professional['backImage'];
                 }
 
                 if ($this->Professionals->save($professionalUpdate)) {
