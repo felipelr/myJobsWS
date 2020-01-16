@@ -4,18 +4,18 @@ namespace App\Model\Entity;
 use Cake\ORM\Entity;
 
 /**
- * City Entity
+ * Story Entity
  *
  * @property int $id
- * @property int|null $state_id
- * @property string|null $name
- * @property int|null $ibge_code
+ * @property int|null $professional_id
+ * @property string|null $description
+ * @property string|null $photo
+ * @property \Cake\I18n\FrozenTime|null $created
+ * @property \Cake\I18n\FrozenTime|null $modified
  *
- * @property \App\Model\Entity\State $state
- * @property \App\Model\Entity\ClientsAddres[] $clients_address
- * @property \App\Model\Entity\ProfessionalsAddres[] $professionals_address
+ * @property \App\Model\Entity\Professional $professional
  */
-class City extends Entity
+class Story extends Entity
 {
     /**
      * Fields that can be mass assigned using newEntity() or patchEntity().
@@ -27,11 +27,11 @@ class City extends Entity
      * @var array
      */
     protected $_accessible = [
-        'state_id' => true,
-        'name' => true,
-        'ibge_code' => true,
-        'state' => true,
-        'clients_address' => true,
-        'professionals_address' => true
+        'professional_id' => true,
+        'description' => true,
+        'photo' => true,
+        'created' => true,
+        'modified' => true,
+        'professional' => true
     ];
 }

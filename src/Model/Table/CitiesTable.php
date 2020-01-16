@@ -10,8 +10,8 @@ use Cake\Validation\Validator;
  * Cities Model
  *
  * @property \App\Model\Table\StatesTable|\Cake\ORM\Association\BelongsTo $States
- * @property \App\Model\Table\ProfessionalsTable|\Cake\ORM\Association\HasMany $Professionals
- * @property \App\Model\Table\UserAddressTable|\Cake\ORM\Association\HasMany $UserAddress
+ * @property |\Cake\ORM\Association\HasMany $ClientsAddresses
+ * @property |\Cake\ORM\Association\HasMany $ProfessionalsAddresses
  *
  * @method \App\Model\Entity\City get($primaryKey, $options = [])
  * @method \App\Model\Entity\City newEntity($data = null, array $options = [])
@@ -41,10 +41,10 @@ class CitiesTable extends Table
         $this->belongsTo('States', [
             'foreignKey' => 'state_id'
         ]);
-        $this->hasMany('Professionals', [
+        $this->hasMany('ClientsAddresses', [
             'foreignKey' => 'city_id'
         ]);
-        $this->hasMany('UserAddress', [
+        $this->hasMany('ProfessionalsAddresses', [
             'foreignKey' => 'city_id'
         ]);
     }

@@ -1,21 +1,21 @@
 <?php
 namespace App\Test\TestCase\Model\Table;
 
-use App\Model\Table\CitiesTable;
+use App\Model\Table\ClientsServiceOrdersTable;
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
 
 /**
- * App\Model\Table\CitiesTable Test Case
+ * App\Model\Table\ClientsServiceOrdersTable Test Case
  */
-class CitiesTableTest extends TestCase
+class ClientsServiceOrdersTableTest extends TestCase
 {
     /**
      * Test subject
      *
-     * @var \App\Model\Table\CitiesTable
+     * @var \App\Model\Table\ClientsServiceOrdersTable
      */
-    public $Cities;
+    public $ClientsServiceOrders;
 
     /**
      * Fixtures
@@ -23,10 +23,10 @@ class CitiesTableTest extends TestCase
      * @var array
      */
     public $fixtures = [
-        'app.Cities',
-        'app.States',
-        'app.ClientsAddress',
-        'app.ProfessionalsAddress'
+        'app.ClientsServiceOrders',
+        'app.Clients',
+        'app.ClientsAddresses',
+        'app.Services'
     ];
 
     /**
@@ -37,8 +37,8 @@ class CitiesTableTest extends TestCase
     public function setUp()
     {
         parent::setUp();
-        $config = TableRegistry::getTableLocator()->exists('Cities') ? [] : ['className' => CitiesTable::class];
-        $this->Cities = TableRegistry::getTableLocator()->get('Cities', $config);
+        $config = TableRegistry::getTableLocator()->exists('ClientsServiceOrders') ? [] : ['className' => ClientsServiceOrdersTable::class];
+        $this->ClientsServiceOrders = TableRegistry::getTableLocator()->get('ClientsServiceOrders', $config);
     }
 
     /**
@@ -48,7 +48,7 @@ class CitiesTableTest extends TestCase
      */
     public function tearDown()
     {
-        unset($this->Cities);
+        unset($this->ClientsServiceOrders);
 
         parent::tearDown();
     }

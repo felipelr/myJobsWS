@@ -7,21 +7,21 @@ use Cake\ORM\Table;
 use Cake\Validation\Validator;
 
 /**
- * UserAddress Model
+ * ProfessionalsAddresses Model
  *
- * @property \App\Model\Table\UsersTable|\Cake\ORM\Association\BelongsTo $Users
+ * @property \App\Model\Table\ProfessionalsTable|\Cake\ORM\Association\BelongsTo $Professionals
  * @property \App\Model\Table\CitiesTable|\Cake\ORM\Association\BelongsTo $Cities
  *
- * @method \App\Model\Entity\UserAddres get($primaryKey, $options = [])
- * @method \App\Model\Entity\UserAddres newEntity($data = null, array $options = [])
- * @method \App\Model\Entity\UserAddres[] newEntities(array $data, array $options = [])
- * @method \App\Model\Entity\UserAddres|bool save(\Cake\Datasource\EntityInterface $entity, $options = [])
- * @method \App\Model\Entity\UserAddres saveOrFail(\Cake\Datasource\EntityInterface $entity, $options = [])
- * @method \App\Model\Entity\UserAddres patchEntity(\Cake\Datasource\EntityInterface $entity, array $data, array $options = [])
- * @method \App\Model\Entity\UserAddres[] patchEntities($entities, array $data, array $options = [])
- * @method \App\Model\Entity\UserAddres findOrCreate($search, callable $callback = null, $options = [])
+ * @method \App\Model\Entity\ProfessionalsAddress get($primaryKey, $options = [])
+ * @method \App\Model\Entity\ProfessionalsAddress newEntity($data = null, array $options = [])
+ * @method \App\Model\Entity\ProfessionalsAddress[] newEntities(array $data, array $options = [])
+ * @method \App\Model\Entity\ProfessionalsAddress|bool save(\Cake\Datasource\EntityInterface $entity, $options = [])
+ * @method \App\Model\Entity\ProfessionalsAddress saveOrFail(\Cake\Datasource\EntityInterface $entity, $options = [])
+ * @method \App\Model\Entity\ProfessionalsAddress patchEntity(\Cake\Datasource\EntityInterface $entity, array $data, array $options = [])
+ * @method \App\Model\Entity\ProfessionalsAddress[] patchEntities($entities, array $data, array $options = [])
+ * @method \App\Model\Entity\ProfessionalsAddress findOrCreate($search, callable $callback = null, $options = [])
  */
-class UserAddressTable extends Table
+class ProfessionalsAddressesTable extends Table
 {
     /**
      * Initialize method
@@ -33,12 +33,12 @@ class UserAddressTable extends Table
     {
         parent::initialize($config);
 
-        $this->setTable('user_address');
+        $this->setTable('professionals_addresses');
         $this->setDisplayField('id');
         $this->setPrimaryKey('id');
 
-        $this->belongsTo('Users', [
-            'foreignKey' => 'user_id',
+        $this->belongsTo('Professionals', [
+            'foreignKey' => 'professional_id',
             'joinType' => 'INNER'
         ]);
         $this->belongsTo('Cities', [
@@ -96,7 +96,7 @@ class UserAddressTable extends Table
      */
     public function buildRules(RulesChecker $rules)
     {
-        $rules->add($rules->existsIn(['user_id'], 'Users'));
+        $rules->add($rules->existsIn(['professional_id'], 'Professionals'));
         $rules->add($rules->existsIn(['city_id'], 'Cities'));
 
         return $rules;

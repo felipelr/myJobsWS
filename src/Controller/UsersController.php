@@ -61,16 +61,28 @@ class UsersController extends AppController
         if (isset($userRow)) {
             $Clients = TableRegistry::getTableLocator()->get('Clients');
             $Professionals = TableRegistry::getTableLocator()->get('Professionals');
+            $ClientsAddresses = TableRegistry::getTableLocator()->get('ClientsAddresses');
+            $ProfessionalsAddresses = TableRegistry::getTableLocator()->get('ProfessionalsAddresses');
 
-            $queryClient = $Clients->find('all')
+            $clientRow = $Clients->find('all')
                 ->where(['Clients.user_id = ' => $id])
-                ->limit(1);
-            $clientRow = $queryClient->first();
+                ->first();
+            if (isset($clientRow['id'])) {
+                $clientRow['clientsAddresses'] = $ClientsAddresses->find('all')
+                    ->where(['ClientsAddresses.client_id = ' => $clientRow['id']])
+                    ->contain(['Cities', 'Cities.States'])
+                    ->all();
+            }
 
-            $queryProfessional = $Professionals->find('all')
+            $professionalRow = $Professionals->find('all')
                 ->where(['Professionals.user_id = ' => $id])
-                ->limit(1);
-            $professionalRow = $queryProfessional->first();
+                ->first();
+            if (isset($professionalRow['id'])) {
+                $professionalRow['professionalsAddresses'] = $ProfessionalsAddresses->find('all')
+                    ->where(['ProfessionalsAddresses.professional_id = ' => $professionalRow['id']])
+                    ->contain(['Cities', 'Cities.States'])
+                    ->all();
+            }
 
             $userRow['client'] = $clientRow;
             $userRow['professional'] = $professionalRow;
@@ -288,18 +300,30 @@ class UsersController extends AppController
                         $userRow = $queryUsers->first();
                         $Clients = TableRegistry::getTableLocator()->get('Clients');
                         $Professionals = TableRegistry::getTableLocator()->get('Professionals');
+                        $ClientsAddresses = TableRegistry::getTableLocator()->get('ClientsAddresses');
+                        $ProfessionalsAddresses = TableRegistry::getTableLocator()->get('ProfessionalsAddresses');
 
-                        $queryClient = $Clients->find('all')
+                        $clientRow = $Clients->find('all')
                             ->where(['Clients.user_id = ' => $userRow['id']])
                             ->contain(['Users'])
-                            ->limit(1);
-                        $clientRow = $queryClient->first();
+                            ->first();
+                        if (isset($clientRow['id'])) {
+                            $clientRow['clientsAddresses'] = $ClientsAddresses->find('all')
+                                ->where(['ClientsAddresses.client_id = ' => $clientRow['id']])
+                                ->contain(['Cities', 'Cities.States'])
+                                ->all();
+                        }
 
-                        $queryProfessional = $Professionals->find('all')
+                        $professionalRow = $Professionals->find('all')
                             ->where(['Professionals.user_id = ' => $userRow['id']])
                             ->contain(['Users'])
-                            ->limit(1);
-                        $professionalRow = $queryProfessional->first();
+                            ->first();
+                        if (isset($professionalRow['id'])) {
+                            $professionalRow['professionalsAddresses'] = $ProfessionalsAddresses->find('all')
+                                ->where(['ProfessionalsAddresses.professional_id = ' => $professionalRow['id']])
+                                ->contain(['Cities', 'Cities.States'])
+                                ->all();
+                        }
                     } else {
                         $errorMessage = 'Usuário não encontrado.';
                     }

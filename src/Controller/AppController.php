@@ -27,7 +27,10 @@ use Cake\Event\Event;
  */
 class AppController extends Controller
 {
-
+    public function beforeFilter(Event $event)
+    {
+        parent::beforeFilter($event);
+    }
     /**
      * Initialization hook method.
      *

@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Controller\AppController;
 use Exception;
+use Cake\ORM\TableRegistry;
 
 /**
  * Clients Controller
@@ -20,19 +21,10 @@ class ClientsController extends AppController
         $this->loadComponent('RequestHandler');
     }
 
-    public function view($id = null)
-    {
-        $client = $this->Clients->get($id, [
-            'contain' => ['Users', 'ClientsAddress']
-        ]);
-
-        $this->set('client', $client);
-    }
-
     public function edit($id = null)
     {
         $client = $this->Clients->get($id, [
-            'contain' => []
+            'contain' => ['Users']
         ]);
 
         $errorMessage = '';
@@ -51,7 +43,7 @@ class ClientsController extends AppController
                 if (isset($image) && $image != '') {
                     $base64 = $image;
                     $output_file = WWW_ROOT . 'img' . DS . 'client-' . $client['id'] . '.jpeg';
-                    $dns_path = "http://myjobs.servicos.ws" . DS . 'img' . DS . 'client-' . $client['id'] . '.jpeg';
+                    $dns_path = "http://myjobs.servicos.ws/ws" . DS . 'img' . DS . 'client-' . $client['id'] . '.jpeg';
 
                     $ifp = fopen($output_file, 'wb');
                     fwrite($ifp, base64_decode($base64));
@@ -74,6 +66,12 @@ class ClientsController extends AppController
         }
 
         if ($errorMessage == '') {
+            $ClientsAddresses = TableRegistry::getTableLocator()->get('ClientsAddresses');
+            $client['clientsAddresses'] = $ClientsAddresses->find('all')
+                ->where(['ClientsAddresses.client_id = ' => $client['id']])
+                ->contain(['Cities', 'Cities.States'])
+                ->all();
+
             $this->set([
                 'client' => $client,
                 '_serialize' => ['client']

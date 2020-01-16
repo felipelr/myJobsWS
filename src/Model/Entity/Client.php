@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Model\Entity;
 
 use Cake\ORM\Entity;
@@ -20,7 +19,6 @@ use Cake\ORM\Entity;
  * @property bool $active
  *
  * @property \App\Model\Entity\User $user
- * @property \App\Model\Entity\ClientsAddres[] $clients_address
  */
 class Client extends Entity
 {
@@ -44,7 +42,6 @@ class Client extends Entity
         'created' => true,
         'modified' => true,
         'active' => true,
-        'user' => true,
-        'clients_address' => true
+        'user' => true
     ];
 }
