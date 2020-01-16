@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Controller\AppController;
+use Cake\Datasource\ConnectionManager;
 
 /**
  * Highlights Controller
@@ -31,7 +32,7 @@ class HighlightsController extends AppController
         ]);
     }
 
-    public function highlightsBySubcategory($idSubcategory)
+    public function highlightsBySubcategory($idSubcategory = null)
     {
         $connection = ConnectionManager::get('default');
         $results = $connection->execute(
