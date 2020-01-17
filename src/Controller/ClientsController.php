@@ -67,6 +67,7 @@ class ClientsController extends AppController
 
         if ($errorMessage == '') {
             $ClientsAddresses = TableRegistry::getTableLocator()->get('ClientsAddresses');
+            $client['modified'] = date('Y-m-d H:i:s');
             $client['clientsAddresses'] = $ClientsAddresses->find('all')
                 ->where(['ClientsAddresses.client_id = ' => $client['id']])
                 ->contain(['Cities', 'Cities.States'])

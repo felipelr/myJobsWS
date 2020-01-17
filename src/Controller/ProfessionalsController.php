@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Controller\AppController;
 use Cake\ORM\TableRegistry;
+use DateTime;
 use Exception;
 
 class ProfessionalsController extends AppController
@@ -106,6 +107,7 @@ class ProfessionalsController extends AppController
 
         if ($errorMessage == '') {
             $ProfessionalsAddresses = TableRegistry::getTableLocator()->get('ProfessionalsAddresses');
+            $professional['modified'] = date('Y-m-d H:i:s');
             $professional['professionalsAddresses'] = $ProfessionalsAddresses->find('all')
                 ->where(['ProfessionalsAddresses.professional_id = ' => $professional['id']])
                 ->contain(['Cities', 'Cities.States'])
