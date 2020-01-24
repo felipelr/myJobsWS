@@ -9,10 +9,9 @@ use Cake\ORM\Entity;
  * @property int $id
  * @property int|null $professional_id
  * @property int|null $client_id
- * @property \Cake\I18n\FrozenDate|null $date
- * @property \Cake\I18n\FrozenTime|null $time
+ * @property \Cake\I18n\FrozenTime|null $date_time
  * @property string|null $message
- * @property string|null $from
+ * @property string|null $msg_from
  *
  * @property \App\Model\Entity\Professional $professional
  * @property \App\Model\Entity\Client $client
@@ -31,10 +30,9 @@ class ChatMessage extends Entity
     protected $_accessible = [
         'professional_id' => true,
         'client_id' => true,
-        'date' => true,
-        'time' => true,
+        'date_time' => true,
         'message' => true,
-        'from' => true,
+        'msg_from' => true,
         'professional' => true,
         'client' => true
     ];

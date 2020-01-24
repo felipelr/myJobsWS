@@ -10,9 +10,10 @@ use Cake\Validation\Validator;
  * Users Model
  *
  * @property \App\Model\Table\RolesTable|\Cake\ORM\Association\BelongsTo $Roles
- * @property |\Cake\ORM\Association\HasMany $Clients
- * @property |\Cake\ORM\Association\HasMany $Professionals
- * @property |\Cake\ORM\Association\HasMany $Ratings
+ * @property \App\Model\Table\CallsTable|\Cake\ORM\Association\HasMany $Calls
+ * @property \App\Model\Table\ClientsTable|\Cake\ORM\Association\HasMany $Clients
+ * @property \App\Model\Table\ProfessionalsTable|\Cake\ORM\Association\HasMany $Professionals
+ * @property \App\Model\Table\RatingsTable|\Cake\ORM\Association\HasMany $Ratings
  *
  * @method \App\Model\Entity\User get($primaryKey, $options = [])
  * @method \App\Model\Entity\User newEntity($data = null, array $options = [])
@@ -47,6 +48,9 @@ class UsersTable extends Table
             'foreignKey' => 'role_id',
             'joinType' => 'INNER'
         ]);
+        $this->hasMany('Calls', [
+            'foreignKey' => 'user_id'
+        ]);
         $this->hasMany('Clients', [
             'foreignKey' => 'user_id'
         ]);
@@ -77,6 +81,21 @@ class UsersTable extends Table
             ->scalar('password')
             ->maxLength('password', 255)
             ->allowEmptyString('password', false);
+
+        $validator
+            ->scalar('facebook_token')
+            ->maxLength('facebook_token', 255)
+            ->allowEmptyString('facebook_token', false);
+
+        $validator
+            ->scalar('google_token')
+            ->maxLength('google_token', 255)
+            ->allowEmptyString('google_token', false);
+
+        $validator
+            ->scalar('fcm_token')
+            ->maxLength('fcm_token', 255)
+            ->allowEmptyString('fcm_token', false);
 
         $validator
             ->boolean('active')

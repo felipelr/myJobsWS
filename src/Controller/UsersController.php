@@ -285,11 +285,11 @@ class UsersController extends AppController
 
                 if ($requestData['socialMidiaType'] == 'facebook') {
                     $queryUsers = $this->Users->find('all')
-                        ->where(['Users.facebook_id = ' => $requestData['socialMidiaId']])
+                        ->where(['Users.facebook_token = ' => $requestData['socialMidiaId']])
                         ->limit(1);
                 } else if ($requestData['socialMidiaType'] == 'google') {
                     $queryUsers = $this->Users->find('all')
-                        ->where(['Users.google_id = ' => $requestData['socialMidiaId']])
+                        ->where(['Users.google_token = ' => $requestData['socialMidiaId']])
                         ->limit(1);
                 } else {
                     $errorMessage = 'Tipo de social mídia inválido.';

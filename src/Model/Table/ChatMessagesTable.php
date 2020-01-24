@@ -57,21 +57,17 @@ class ChatMessagesTable extends Table
             ->allowEmptyString('id', 'create');
 
         $validator
-            ->date('date')
-            ->allowEmptyDate('date');
-
-        $validator
-            ->time('time')
-            ->allowEmptyTime('time');
+            ->dateTime('date_time')
+            ->allowEmptyDateTime('date_time');
 
         $validator
             ->scalar('message')
             ->allowEmptyString('message');
 
         $validator
-            ->scalar('from')
-            ->maxLength('from', 50)
-            ->allowEmptyString('from');
+            ->scalar('msg_from')
+            ->maxLength('msg_from', 50)
+            ->allowEmptyString('msg_from');
 
         return $validator;
     }
