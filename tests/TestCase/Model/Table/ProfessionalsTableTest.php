@@ -25,10 +25,11 @@ class ProfessionalsTableTest extends TestCase
     public $fixtures = [
         'app.Professionals',
         'app.Users',
+        'app.Calls',
         'app.Highlights',
         'app.ProfessionalPhones',
         'app.ProfessionalServices',
-        'app.ProfessionalsAddress',
+        'app.ProfessionalsAddresses',
         'app.Ratings'
     ];
 

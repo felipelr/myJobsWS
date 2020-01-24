@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Model\Table;
 
 use Cake\ORM\Query;
@@ -11,12 +10,15 @@ use Cake\Validation\Validator;
  * Professionals Model
  *
  * @property \App\Model\Table\UsersTable|\Cake\ORM\Association\BelongsTo $Users
- * @property |\Cake\ORM\Association\HasMany $Calls
+ * @property \App\Model\Table\CallsTable|\Cake\ORM\Association\HasMany $Calls
+ * @property |\Cake\ORM\Association\HasMany $ChatMessages
  * @property \App\Model\Table\HighlightsTable|\Cake\ORM\Association\HasMany $Highlights
+ * @property |\Cake\ORM\Association\HasMany $ProfessionalComments
  * @property \App\Model\Table\ProfessionalPhonesTable|\Cake\ORM\Association\HasMany $ProfessionalPhones
  * @property \App\Model\Table\ProfessionalServicesTable|\Cake\ORM\Association\HasMany $ProfessionalServices
- * @property |\Cake\ORM\Association\HasMany $ProfessionalsAddresses
+ * @property \App\Model\Table\ProfessionalsAddressesTable|\Cake\ORM\Association\HasMany $ProfessionalsAddresses
  * @property \App\Model\Table\RatingsTable|\Cake\ORM\Association\HasMany $Ratings
+ * @property |\Cake\ORM\Association\HasMany $Stories
  *
  * @method \App\Model\Entity\Professional get($primaryKey, $options = [])
  * @method \App\Model\Entity\Professional newEntity($data = null, array $options = [])
@@ -53,7 +55,13 @@ class ProfessionalsTable extends Table
         $this->hasMany('Calls', [
             'foreignKey' => 'professional_id'
         ]);
+        $this->hasMany('ChatMessages', [
+            'foreignKey' => 'professional_id'
+        ]);
         $this->hasMany('Highlights', [
+            'foreignKey' => 'professional_id'
+        ]);
+        $this->hasMany('ProfessionalComments', [
             'foreignKey' => 'professional_id'
         ]);
         $this->hasMany('ProfessionalPhones', [
@@ -66,6 +74,9 @@ class ProfessionalsTable extends Table
             'foreignKey' => 'professional_id'
         ]);
         $this->hasMany('Ratings', [
+            'foreignKey' => 'professional_id'
+        ]);
+        $this->hasMany('Stories', [
             'foreignKey' => 'professional_id'
         ]);
     }

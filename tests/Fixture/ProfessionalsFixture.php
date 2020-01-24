@@ -22,9 +22,10 @@ class ProfessionalsFixture extends TestFixture
         'document' => ['type' => 'string', 'length' => 50, 'null' => true, 'default' => null, 'collate' => 'latin1_general_ci', 'comment' => '', 'precision' => null, 'fixed' => null],
         'date_birth' => ['type' => 'date', 'length' => null, 'null' => true, 'default' => null, 'comment' => '', 'precision' => null],
         'photo' => ['type' => 'string', 'length' => 255, 'null' => true, 'default' => null, 'collate' => 'latin1_general_ci', 'comment' => '', 'precision' => null, 'fixed' => null],
-        'active' => ['type' => 'tinyinteger', 'length' => 4, 'unsigned' => false, 'null' => false, 'default' => '1', 'comment' => '', 'precision' => null],
+        'backImage' => ['type' => 'string', 'length' => 255, 'null' => true, 'default' => null, 'collate' => 'latin1_general_ci', 'comment' => '', 'precision' => null, 'fixed' => null],
         'created' => ['type' => 'datetime', 'length' => null, 'null' => true, 'default' => null, 'comment' => '', 'precision' => null],
         'modified' => ['type' => 'datetime', 'length' => null, 'null' => true, 'default' => null, 'comment' => '', 'precision' => null],
+        'active' => ['type' => 'tinyinteger', 'length' => 4, 'unsigned' => false, 'null' => false, 'default' => '1', 'comment' => '', 'precision' => null],
         '_indexes' => [
             'professionals_user_id_fk' => ['type' => 'index', 'columns' => ['user_id'], 'length' => []],
         ],
@@ -52,11 +53,12 @@ class ProfessionalsFixture extends TestFixture
                 'name' => 'Lorem ipsum dolor sit amet',
                 'description' => 'Lorem ipsum dolor sit amet, aliquet feugiat. Convallis morbi fringilla gravida, phasellus feugiat dapibus velit nunc, pulvinar eget sollicitudin venenatis cum nullam, vivamus ut a sed, mollitia lectus. Nulla vestibulum massa neque ut et, id hendrerit sit, feugiat in taciti enim proin nibh, tempor dignissim, rhoncus duis vestibulum nunc mattis convallis.',
                 'document' => 'Lorem ipsum dolor sit amet',
-                'date_birth' => '2019-10-21',
+                'date_birth' => '2020-01-24',
                 'photo' => 'Lorem ipsum dolor sit amet',
-                'active' => 1,
-                'created' => '2019-10-21 20:43:52',
-                'modified' => '2019-10-21 20:43:52'
+                'backImage' => 'Lorem ipsum dolor sit amet',
+                'created' => '2020-01-24 14:47:49',
+                'modified' => '2020-01-24 14:47:49',
+                'active' => 1
             ],
         ];
         parent::init();

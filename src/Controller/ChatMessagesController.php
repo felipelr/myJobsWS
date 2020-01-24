@@ -4,9 +4,11 @@ namespace App\Controller;
 
 use App\Controller\AppController;
 use Cake\Http\Client;
+use Cake\ORM\TableRegistry;
 use Kreait\Firebase;
 use Kreait\Firebase\Messaging\CloudMessage;
 use Kreait\Firebase\Factory;
+use Exception;
 
 /**
  * ChatMessages Controller
@@ -68,22 +70,47 @@ class ChatMessagesController extends AppController
             $errorMessage = 'Método não implementado.';
         }
 
-        if ($tokenApp != '') {
-            $factory = (new Factory())
-                ->withServiceAccount(WWW_ROOT . 'myjobstest-719a9-firebase-adminsdk-bjq4h-db0fea2767.json');
-            $messaging = $factory->createMessaging();
+        if ($message != null) {
+            if ($message['msg_from'] == 'client') {
+                $Professionals = TableRegistry::getTableLocator()->get('Professionals');
+                $professional = $Professionals->find('all')
+                    ->where(['Professionals.id = ' => $message['professional_id']])
+                    ->contain(['Users'])
+                    ->first();
+                if (isset($professional)) {
+                    $tokenApp = $professional['user']['fcm_token'] == null ? '' : $professional['user']['fcm_token'];
+                }
+            } else {
+                $Clients = TableRegistry::getTableLocator()->get('Clients');
+                $client = $Clients->find('all')
+                    ->where(['Clients.id = ' => $message['client_id']])
+                    ->contain(['Users'])
+                    ->first();
+                if (isset($client)) {
+                    $tokenApp = $client['user']['fcm_token'] == null ? '' : $client['user']['fcm_token'];
+                }
+            }
 
-            $messageFCM = CloudMessage::withTarget('token', $tokenApp)
-                ->withNotification([
-                    'title' => 'MyJobs',
-                    'body' => $message['message'],
-                    'icon' => 'ic_launcher'
-                ])
-                ->withData([
-                    'message' => $message
-                ]);
+            if ($tokenApp != '') {
+                try {
+                    $factory = (new Factory())
+                        ->withServiceAccount(WWW_ROOT . 'myjobstest-719a9-firebase-adminsdk-bjq4h-db0fea2767.json');
+                    $messaging = $factory->createMessaging();
 
-            $messaging->send($messageFCM);
+                    $messageFCM = CloudMessage::withTarget('token', $tokenApp)
+                        ->withNotification([
+                            'title' => 'MyJobs',
+                            'body' => $message['message'],
+                            'icon' => 'ic_launcher'
+                        ])
+                        ->withData([
+                            'message' => $message
+                        ]);
+
+                    $messaging->send($messageFCM);
+                } catch (Exception $ex) {
+                }
+            }
         }
 
         if ($errorMessage == '') {

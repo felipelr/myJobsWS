@@ -14,15 +14,16 @@ use Cake\ORM\Entity;
  * @property \Cake\I18n\FrozenDate|null $date_birth
  * @property string|null $photo
  * @property string|null $backImage
- * @property int $active
  * @property \Cake\I18n\FrozenTime|null $created
  * @property \Cake\I18n\FrozenTime|null $modified
+ * @property int $active
  *
  * @property \App\Model\Entity\User $user
+ * @property \App\Model\Entity\Call[] $calls
  * @property \App\Model\Entity\Highlight[] $highlights
  * @property \App\Model\Entity\ProfessionalPhone[] $professional_phones
  * @property \App\Model\Entity\ProfessionalService[] $professional_services
- * @property \App\Model\Entity\ProfessionalsAddres[] $professionals_address
+ * @property \App\Model\Entity\ProfessionalsAddress[] $professionals_addresses
  * @property \App\Model\Entity\Rating[] $ratings
  */
 class Professional extends Entity
@@ -44,14 +45,15 @@ class Professional extends Entity
         'date_birth' => true,
         'photo' => true,
         'backImage' => true,
-        'active' => true,
         'created' => true,
         'modified' => true,
+        'active' => true,
         'user' => true,
+        'calls' => true,
         'highlights' => true,
         'professional_phones' => true,
         'professional_services' => true,
-        'professionals_address' => true,
+        'professionals_addresses' => true,
         'ratings' => true
     ];
 }
