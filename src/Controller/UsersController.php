@@ -7,6 +7,7 @@ use Cake\Http\Exception\UnauthorizedException;
 use Cake\Utility\Security;
 use Firebase\JWT\JWT;
 use Cake\ORM\TableRegistry;
+use Exception;
 
 /**
  * Users Controller
@@ -49,7 +50,8 @@ class UsersController extends AppController
     }
 
     public function index()
-    { }
+    {
+    }
 
     public function view($id)
     {
@@ -388,6 +390,42 @@ class UsersController extends AppController
             $this->set([
                 'user' => $user,
                 '_serialize' => ['user']
+            ]);
+        } else {
+            $this->set([
+                'error' => true,
+                'errorMessage' => $errorMessage,
+                '_serialize' => ['error', 'errorMessage']
+            ]);
+        }
+    }
+
+    public function updateFcmToken()
+    {
+        $errorMessage = '';
+        try{
+            if ($this->request->is('post')) {
+                $user_id = $this->request->getData('user_id');
+                $fcm_token = $this->request->getData('fcm_token');
+                $user = $this->Users->get($user_id);
+    
+                if (isset($user)) {
+                    $user->fcm_token = $fcm_token;
+                    if (!$this->Users->save($user)) {
+                        $errorMessage = 'Não foi possível alterar o FCM Token.';
+                    }
+                } else {
+                    $errorMessage = 'Usuário não localizado. user_id => ' . $user_id;
+                }
+            }
+        } catch (Exception $ex) {
+            $errorMessage = $ex->getMessage() . '\n' . json_encode($this->request->getData());
+        }
+
+        if ($errorMessage == '') {
+            $this->set([
+                'success' => true,
+                '_serialize' => ['success']
             ]);
         } else {
             $this->set([
