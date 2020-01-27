@@ -154,7 +154,7 @@ class ChatMessagesController extends AppController
         ]);
     }
 
-    public function clientsChats()
+    public function clientChats()
     {
         $client_id = $this->request->query('client_id');
 
