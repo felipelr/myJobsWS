@@ -71,6 +71,7 @@ class ChatMessagesController extends AppController
         }
 
         if ($message != null) {
+            $title = 'MyJobs';
             if ($message['msg_from'] == 'client') {
                 $Professionals = TableRegistry::getTableLocator()->get('Professionals');
                 $professional = $Professionals->find('all')
@@ -79,6 +80,7 @@ class ChatMessagesController extends AppController
                     ->first();
                 if (isset($professional)) {
                     $tokenApp = $professional['user']['fcm_token'] == null ? '' : $professional['user']['fcm_token'];
+                    $title = $professional['name'];
                 }
             } else {
                 $Clients = TableRegistry::getTableLocator()->get('Clients');
@@ -88,6 +90,7 @@ class ChatMessagesController extends AppController
                     ->first();
                 if (isset($client)) {
                     $tokenApp = $client['user']['fcm_token'] == null ? '' : $client['user']['fcm_token'];
+                    $title = $client['name'];
                 }
             }
 
@@ -99,7 +102,7 @@ class ChatMessagesController extends AppController
 
                     $messageFCM = CloudMessage::withTarget('token', $tokenApp)
                         ->withNotification([
-                            'title' => 'MyJobs',
+                            'title' => $title,
                             'body' => $message['message'],
                             'icon' => 'ic_launcher'
                         ])
@@ -125,5 +128,53 @@ class ChatMessagesController extends AppController
                 '_serialize' => ['error', 'errorMessage']
             ]);
         }
+    }
+
+    public function professionalChats()
+    {
+        $professional_id = $this->request->query('professional_id');
+
+        $chatMessages = [];
+        $query = $this->ChatMessages->find('all')
+            ->where([
+                'ChatMessages.professional_id = ' => $professional_id,
+            ])
+            ->contain(['Clients'])
+            ->group(['ChatMessages.client_id']);
+
+        foreach ($query as $row) {
+            $row['date'] = date('d/m/Y', strtotime($row['date_time']));
+            $row['time'] = date('H:i:s', strtotime($row['date_time']));
+            $chatMessages[] = $row;
+        }
+
+        $this->set([
+            'chatMessages' => $chatMessages,
+            '_serialize' => ['chatMessages']
+        ]);
+    }
+
+    public function clientsChats()
+    {
+        $client_id = $this->request->query('client_id');
+
+        $chatMessages = [];
+        $query = $this->ChatMessages->find('all')
+            ->where([
+                'ChatMessages.client_id = ' => $client_id,
+            ])
+            ->contain(['Professionals'])
+            ->group(['ChatMessages.professional_id']);
+
+        foreach ($query as $row) {
+            $row['date'] = date('d/m/Y', strtotime($row['date_time']));
+            $row['time'] = date('H:i:s', strtotime($row['date_time']));
+            $chatMessages[] = $row;
+        }
+
+        $this->set([
+            'chatMessages' => $chatMessages,
+            '_serialize' => ['chatMessages']
+        ]);
     }
 }
