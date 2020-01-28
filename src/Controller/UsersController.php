@@ -22,9 +22,39 @@ class UsersController extends AppController
     {
         parent::initialize();
         $this->loadComponent('RequestHandler');
-        $this->Auth->allow(['login', 'add', 'socialMidiaVerify']);
+        $this->Auth->allow(['login', 'add', 'socialMidiaVerify', 'loginServer']);
     }
 
+    public function loginServer()
+    {
+        $result = $this->Authentication->getResult();
+        // If the user is logged in send them away.
+        if ($result->isValid()) {
+            $target = $this->Authentication->getLoginRedirect() ?? '/home';
+            return $this->redirect($target);
+        }
+        if ($this->request->is('post') && !$result->isValid()) {
+            $this->Flash->error('Invalid username or password');
+        }
+    }
+
+    public function logoutServer()
+    {
+        $this->Authentication->logout();
+        return $this->redirect(['controller' => 'Users', 'action' => 'login']);
+    }
+
+    public function signin()
+    {
+        $this->render();
+    }
+
+    public function index()
+    {
+        $this->render();
+    }
+
+    //API WS
     public function login()
     {
         if ($this->request->is('post')) {
@@ -47,10 +77,6 @@ class UsersController extends AppController
                 '_serialize' => ['success', 'data']
             ]);
         }
-    }
-
-    public function index()
-    {
     }
 
     public function view($id)
@@ -403,12 +429,12 @@ class UsersController extends AppController
     public function updateFcmToken()
     {
         $errorMessage = '';
-        try{
+        try {
             if ($this->request->is('post')) {
                 $user_id = $this->request->getData('user_id');
                 $fcm_token = $this->request->getData('fcm_token');
                 $user = $this->Users->get($user_id);
-    
+
                 if (isset($user)) {
                     $user->fcm_token = $fcm_token;
                     if (!$this->Users->save($user)) {

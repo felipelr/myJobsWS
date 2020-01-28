@@ -48,12 +48,13 @@ class AppController extends Controller
             'storage' => 'Memory',
             'authenticate' => [
                 'Form' => [
+                    'userModel' => 'Users',
                     'scope' => ['Users.active' => 1],
                     'fields' => [
                         'username' => 'email',
                         'password' => 'password',
                     ],
-                    'contain' => ['Roles']
+                    'contain' => ['Roles'],
                 ],
                 'ADmad/JwtAuth.Jwt' => [
                     'parameter' => 'token',
