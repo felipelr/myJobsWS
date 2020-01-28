@@ -22,25 +22,25 @@ class UsersController extends AppController
     {
         parent::initialize();
         $this->loadComponent('RequestHandler');
-        $this->Auth->allow(['login', 'add', 'socialMidiaVerify', 'loginServer']);
+        $this->Auth->allow(['login', 'add', 'socialMidiaVerify', 'signin']);
     }
 
     public function loginServer()
     {
-        $result = $this->Authentication->getResult();
-        // If the user is logged in send them away.
-        if ($result->isValid()) {
-            $target = $this->Authentication->getLoginRedirect() ?? '/home';
-            return $this->redirect($target);
-        }
-        if ($this->request->is('post') && !$result->isValid()) {
-            $this->Flash->error('Invalid username or password');
+        if ($this->request->is('post')) {
+            $user = $this->Auth->identify();
+            if ($user) {
+                $this->Auth->setUser($user);
+                return $this->redirect($this->Auth->redirectUrl());
+            } else {
+                $this->Flash->error(__('Username or password is incorrect'));
+            }
         }
     }
 
     public function logoutServer()
     {
-        $this->Authentication->logout();
+        $this->Auth->logout();
         return $this->redirect(['controller' => 'Users', 'action' => 'login']);
     }
 
