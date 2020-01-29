@@ -130,8 +130,8 @@ class ProfessionalsController extends AppController
     public function getByService($idService = null)
     { 
         $connection = ConnectionManager::get('default');
-        $profissionais = $connection->execute(
-        "   SELECT p.id, p.name AS nome, p.description AS descricao, ps.rating AS avaliacao, ps.amount_ratings AS qtdeAvaliacoes, '\"87 Atendimentos realizados,  0.82km de você\"' AS info, photo AS imagem 
+        $professionals = $connection->execute(
+        "   SELECT p.id, p.name, p.description, ps.rating, ps.amount_ratings, '\"87 Atendimentos realizados,  0.82km de você\"' AS info, photo 
             FROM professionals AS p 
             INNER JOIN professional_services AS ps ON(ps.professional_id = p.id)
             INNER JOIN services AS s ON(s.id = ps.service_id)
@@ -140,8 +140,8 @@ class ProfessionalsController extends AppController
         ->fetchAll('assoc');
 
         $this->set([
-            'profissionais' => $profissionais, 
-            '_serialize' => ['profissionais']
+            'professionals' => $professionals, 
+            '_serialize' => ['professionals']
         ]);
 
     }
