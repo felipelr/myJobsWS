@@ -21,32 +21,28 @@ class UsersController extends AppController
     public function initialize()
     {
         parent::initialize();
-        $this->loadComponent('RequestHandler');
         $this->Auth->allow(['login', 'add', 'socialMidiaVerify', 'signin']);
-    }
-
-    public function loginServer()
-    {
-        if ($this->request->is('post')) {
-            $user = $this->Auth->identify();
-            if ($user) {
-                $this->Auth->setUser($user);
-                return $this->redirect($this->Auth->redirectUrl());
-            } else {
-                $this->Flash->error(__('Username or password is incorrect'));
-            }
-        }
     }
 
     public function logoutServer()
     {
         $this->Auth->logout();
-        return $this->redirect(['controller' => 'Users', 'action' => 'login']);
+        return $this->redirect(['controller' => 'Users', 'action' => 'signin']);
     }
 
     public function signin()
     {
-        $this->render();
+        if ($this->request->is('post')) {
+            $user = $this->Auth->identify();
+            if ($user) {
+                $this->Auth->setUser($user);
+                return $this->redirect(['controller' => 'Home', 'action' => 'index']);
+            } else {
+                $this->Flash->error(__('O email ou a senha estão inválidos.'));
+            }
+        } else {
+            $this->render();
+        }
     }
 
     public function index()

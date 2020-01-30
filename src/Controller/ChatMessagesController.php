@@ -53,9 +53,6 @@ class ChatMessagesController extends AppController
         $errorMessage = '';
         $message = null;
         $tokenApp = '';
-        //$tokenApp = 'cu2p1FNtnYQ:APA91bH069tsZsUOJxdbxod6-p17MZgwJHTVbcNSoA-TS-USknDhp6A9yZNY2-cw-dK35vhVdADPjDQe8FQsEjkjrhHtPM8a1mGV4mDrntH5U7iI07dPdIp8Fm8vqgIKBSNXzXQ9RoEb';
-        //$projectId = 'myjobstest-719a9';
-        //$apiKey = 'AIzaSyBFwPPqTVHIJYgKwoViNwlkC7QcQDbvII4';
 
         if ($this->request->is('post')) {
             $newMessage = $this->ChatMessages->newEntity();
