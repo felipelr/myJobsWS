@@ -92,8 +92,7 @@ class ClientsTable extends Table
         $validator
             ->scalar('photo')
             ->maxLength('photo', 255)
-            ->requirePresence('photo', 'create')
-            ->allowEmptyString('photo', false);
+            ->allowEmptyString('photo');
 
         $validator
             ->boolean('active')

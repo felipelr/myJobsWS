@@ -243,7 +243,7 @@ class UsersController extends AppController
                             } else {
                                 //not ok
                                 $this->Users->delete($user);
-                                $errorMessage = 'Não foi possível criar o usuário.';
+                                $errorMessage = 'Não foi possível criar o usuário. ' . json_encode($client->errors());
                             }
                         } else {
                             $Professionals = TableRegistry::getTableLocator()->get('Professionals');
