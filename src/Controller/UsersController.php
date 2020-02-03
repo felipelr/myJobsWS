@@ -21,7 +21,7 @@ class UsersController extends AppController
     public function initialize()
     {
         parent::initialize();
-        $this->Auth->allow(['login', 'add', 'socialMidiaVerify', 'signin']);
+        $this->Auth->allow(['login', 'add', 'socialMidiaVerify', 'signin', 'teste']);
     }
 
     public function logoutServer()
@@ -213,14 +213,58 @@ class UsersController extends AppController
                 }
             }
 
+            $Clients = TableRegistry::getTableLocator()->get('Clients');
+            $Professionals = TableRegistry::getTableLocator()->get('Professionals');
+
             if ($errorMessage == '') {
                 $userExistent = $this->Users->find('all')
                     ->where(['Users.email = ' => $user['email']])
                     ->limit(1);
 
                 if ($userExistent->count() > 0) {
-                    //not ok
-                    $errorMessage = 'Já existe um usuário cadastrado com esse email.';
+                    $user_ = $userExistent->first();
+                    $userId = $user_['id'];
+                    $roleId = $user_['role_id'];
+
+                    if ($requestData['userType'] == 1 && $roleId == 2) {
+                        $client = $Clients->newEntity();
+                        $client = $Clients->patchEntity($client, $requestData);
+
+                        $client['user_id'] = $userId;
+
+                        if ($Clients->save($client)) {
+                            //ok
+                            $errorMessage = '';
+                            $newUser = $Clients->get($client['id'], [
+                                'contain' => ['Users']
+                            ]);
+                        } else {
+                            //not ok
+                            $this->Users->delete($user);
+                            $errorMessage = 'Não foi possível criar o usuário. ' . json_encode($client->errors());
+                        }
+                    } else if ($requestData['userType'] == 2 && $roleId == 1) {
+                        $professional = $Professionals->newEntity();
+                        $professional = $Professionals->patchEntity($professional, $requestData);
+
+                        $professional['user_id'] = $userId;
+
+                        if ($Professionals->save($professional)) {
+                            //ok
+                            $errorMessage = '';
+                            $newUser = $Professionals->get($professional['id'], [
+                                'contain' => ['Users']
+                            ]);
+                        } else {
+                            //not ok
+                            $this->Users->delete($user);
+                            $errorMessage = 'Não foi possível criar o usuário.' . json_encode($professional->getErrors());
+                            //$errorMessage = 'Não foi possível criar o usuário.';
+                        }
+                    } else {
+                        //not ok
+                        $errorMessage = 'Já existe um usuário cadastrado com esse email.';
+                    }
                 } else {
                     //fixo por enquanto
                     $user['role_id'] = $requestData['userType'] == '1' ? 1 : 2;
@@ -228,7 +272,6 @@ class UsersController extends AppController
 
                     if ($this->Users->save($user)) {
                         if ($requestData['userType'] == 1) {
-                            $Clients = TableRegistry::getTableLocator()->get('Clients');
                             $client = $Clients->newEntity();
                             $client = $Clients->patchEntity($client, $requestData);
 
@@ -246,7 +289,6 @@ class UsersController extends AppController
                                 $errorMessage = 'Não foi possível criar o usuário. ' . json_encode($client->errors());
                             }
                         } else {
-                            $Professionals = TableRegistry::getTableLocator()->get('Professionals');
                             $professional = $Professionals->newEntity();
                             $professional = $Professionals->patchEntity($professional, $requestData);
 
