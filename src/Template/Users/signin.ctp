@@ -5,7 +5,7 @@
  * @var \App\Model\Entity\User[]|\Cake\Collection\CollectionInterface $users
  */
 ?>
-<div>
+<div class="large-9 medium-8 columns content">
     <h1>Login</h1>
     <?php
     echo $this->Form->create(null, ['url' => '/users/signin']);

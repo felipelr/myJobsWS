@@ -5,7 +5,7 @@ use Cake\Error\Debugger;
 $this->layout = 'error';
 
 ?>
-<div>
+<div class="large-9 medium-8 columns content">
     <?php
     if ($code == 401) {
     ?>

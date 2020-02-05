@@ -8,13 +8,21 @@ class ServicesController extends AppController
 { 
     public function index()
     {
-        $services = $this->Services->find('all')
-        ->where(['Services.active = ' => true]);
+        $this->paginate = [
+            'contain' => ['Subcategories']
+        ];
+        $services = $this->paginate($this->Services);
 
-        $this->set([
-            'services' => $services,
-            '_serialize' => ['services']
+        $this->set(compact('services'));
+    }
+
+    public function view($id = null)
+    {
+        $service = $this->Services->get($id, [
+            'contain' => ['Subcategories']
         ]);
+
+        $this->set('service', $service);
     }
 
     public function getBySubcategory($idSubcategory = null)

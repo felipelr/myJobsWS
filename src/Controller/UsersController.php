@@ -47,7 +47,12 @@ class UsersController extends AppController
 
     public function index()
     {
-        $this->render();
+        $this->paginate = [
+            'contain' => ['Clients', 'Professionals', 'Roles']
+        ];
+        $users = $this->paginate($this->Users);
+
+        $this->set(compact('users'));
     }
 
     //API WS

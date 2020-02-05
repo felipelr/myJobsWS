@@ -482,9 +482,6 @@ div.message.hidden {
 .container {
     overflow: hidden;
     min-height: 92%; /* full height almost always */
-    padding-left: 5% !important;
-    padding-right: 5% !important;
-    padding-top: 20px !important;
 }
 
 /* Force equal height by overflowing */
