@@ -24,7 +24,9 @@ class HighlightsTableTest extends TestCase
      */
     public $fixtures = [
         'app.Highlights',
-        'app.Professionals'
+        'app.Professionals',
+        'app.Subcategories',
+        'app.Services'
     ];
 
     /**

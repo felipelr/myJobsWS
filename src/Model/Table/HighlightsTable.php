@@ -10,6 +10,8 @@ use Cake\Validation\Validator;
  * Highlights Model
  *
  * @property \App\Model\Table\ProfessionalsTable|\Cake\ORM\Association\BelongsTo $Professionals
+ * @property \App\Model\Table\SubcategoriesTable|\Cake\ORM\Association\BelongsTo $Subcategories
+ * @property \App\Model\Table\ServicesTable|\Cake\ORM\Association\BelongsTo $Services
  *
  * @method \App\Model\Entity\Highlight get($primaryKey, $options = [])
  * @method \App\Model\Entity\Highlight newEntity($data = null, array $options = [])
@@ -35,11 +37,19 @@ class HighlightsTable extends Table
         parent::initialize($config);
 
         $this->setTable('highlights');
+        $this->setDisplayField('id');
+        $this->setPrimaryKey('id');
 
         $this->addBehavior('Timestamp');
 
         $this->belongsTo('Professionals', [
             'foreignKey' => 'professional_id'
+        ]);
+        $this->belongsTo('Subcategories', [
+            'foreignKey' => 'subcategory_id'
+        ]);
+        $this->belongsTo('Services', [
+            'foreignKey' => 'service_id'
         ]);
     }
 
@@ -51,6 +61,9 @@ class HighlightsTable extends Table
      */
     public function validationDefault(Validator $validator)
     {
+        $validator
+            ->allowEmptyString('id', 'create');
+
         $validator
             ->dateTime('finish')
             ->allowEmptyDateTime('finish');
@@ -72,6 +85,8 @@ class HighlightsTable extends Table
     public function buildRules(RulesChecker $rules)
     {
         $rules->add($rules->existsIn(['professional_id'], 'Professionals'));
+        $rules->add($rules->existsIn(['subcategory_id'], 'Subcategories'));
+        $rules->add($rules->existsIn(['service_id'], 'Services'));
 
         return $rules;
     }

@@ -21,10 +21,10 @@ class UsersController extends AppController
     public function initialize()
     {
         parent::initialize();
-        $this->Auth->allow(['login', 'add', 'socialMidiaVerify', 'signin', 'teste']);
+        $this->Auth->allow(['login', 'add', 'socialMidiaVerify', 'signin']);
     }
 
-    public function logoutServer()
+    public function logout()
     {
         $this->Auth->logout();
         return $this->redirect(['controller' => 'Users', 'action' => 'signin']);
@@ -35,8 +35,13 @@ class UsersController extends AppController
         if ($this->request->is('post')) {
             $user = $this->Auth->identify();
             if ($user) {
-                $this->Auth->setUser($user);
-                return $this->redirect(['controller' => 'Home', 'action' => 'index']);
+                if ($user['role_id'] == 3) {
+                    $this->Auth->setUser($user);
+                    return $this->redirect(['controller' => 'Home', 'action' => 'index']);
+                } else {
+                    $this->Auth->logout();
+                    $this->Flash->error(__('O email ou a senha estão inválidos.'));
+                }
             } else {
                 $this->Flash->error(__('O email ou a senha estão inválidos.'));
             }

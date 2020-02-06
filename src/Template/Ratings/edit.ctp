@@ -14,10 +14,6 @@
             )
         ?></li>
         <li><?= $this->Html->link(__('List Ratings'), ['action' => 'index']) ?></li>
-        <li><?= $this->Html->link(__('List Users'), ['controller' => 'Users', 'action' => 'index']) ?></li>
-        <li><?= $this->Html->link(__('New User'), ['controller' => 'Users', 'action' => 'add']) ?></li>
-        <li><?= $this->Html->link(__('List Professionals'), ['controller' => 'Professionals', 'action' => 'index']) ?></li>
-        <li><?= $this->Html->link(__('New Professional'), ['controller' => 'Professionals', 'action' => 'add']) ?></li>
     </ul>
 </nav>
 <div class="ratings form large-9 medium-8 columns content">

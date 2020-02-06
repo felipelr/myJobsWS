@@ -13,7 +13,107 @@ use Cake\Datasource\ConnectionManager;
  * @method \App\Model\Entity\Highlight[]|\Cake\Datasource\ResultSetInterface paginate($object = null, array $settings = [])
  */
 class HighlightsController extends AppController
-{ 
+{
+    public function index()
+    {
+        $this->paginate = [
+            'contain' => ['Professionals', 'Services', 'Subcategories']
+        ];
+        $highlights = $this->paginate($this->Highlights);
+
+        $this->set(compact('highlights'));
+    }
+
+    public function view($id = null)
+    {
+        $highlight = $this->Highlights->get($id, [
+            'contain' => ['Professionals', 'Services', 'Subcategories']
+        ]);
+
+        $this->set('highlight', $highlight);
+    }
+
+    public function add()
+    {
+        $highlight = $this->Highlights->newEntity();
+        if ($this->request->is('post')) {
+            $highlight = $this->Highlights->patchEntity($highlight, $this->request->getData());
+            if ($this->Highlights->save($highlight)) {
+                $this->Flash->success(__('The highlight has been saved.'));
+
+                return $this->redirect(['action' => 'index']);
+            }
+            $this->Flash->error(__('The highlight could not be saved. Please, try again.'));
+        }
+
+        $professionals = $this->Highlights->Professionals->find('list', [
+            'keyField' => 'id',
+            'valueField' => 'name',
+        ]);
+
+        $services = $this->Highlights->Services->find('list', [
+            'keyField' => 'id',
+            'valueField' => 'title',
+            'groupField' => 'subcategory.description'
+        ])->contain(['Subcategories']);
+
+        $subcategories = $this->Highlights->Subcategories->find('list', [
+            'keyField' => 'id',
+            'valueField' => 'description',
+            'groupField' => 'category.description'
+        ])->contain(['Categories']);
+
+        $this->set(compact('highlight', 'professionals', 'services', 'subcategories'));
+    }
+
+    public function edit($id = null)
+    {
+        $highlight = $this->Highlights->get($id, [
+            'contain' => []
+        ]);
+        if ($this->request->is(['patch', 'post', 'put'])) {
+            $highlight = $this->Highlights->patchEntity($highlight, $this->request->getData());
+            if ($this->Highlights->save($highlight)) {
+                $this->Flash->success(__('The service has been saved.'));
+
+                return $this->redirect(['action' => 'index']);
+            }
+            $this->Flash->error(__('The service could not be saved. Please, try again.'));
+        }
+        
+        $professionals = $this->Highlights->Professionals->find('list', [
+            'keyField' => 'id',
+            'valueField' => 'name',
+        ]);
+
+        $services = $this->Highlights->Services->find('list', [
+            'keyField' => 'id',
+            'valueField' => 'title',
+            'groupField' => 'subcategory.description'
+        ])->contain(['Subcategories']);
+
+        $subcategories = $this->Highlights->Subcategories->find('list', [
+            'keyField' => 'id',
+            'valueField' => 'description',
+            'groupField' => 'category.description'
+        ])->contain(['Categories']);
+
+        $this->set(compact('highlight', 'professionals', 'services', 'subcategories'));
+    }
+
+    public function delete($id = null)
+    {
+        $this->request->allowMethod(['post', 'delete']);
+        $highlight = $this->Highlights->get($id);
+        if ($this->Highlights->delete($highlight)) {
+            $this->Flash->success(__('The highlight has been deleted.'));
+        } else {
+            $this->Flash->error(__('The highlight could not be deleted. Please, try again.'));
+        }
+
+        return $this->redirect(['action' => 'index']);
+    }
+
     public function highlights()
     {
         $connection = ConnectionManager::get('default');
@@ -69,5 +169,4 @@ class HighlightsController extends AppController
             '_serialize' => ['highlights']
         ]);
     }
-
 }

@@ -11,10 +11,6 @@
         <li><?= $this->Form->postLink(__('Delete Rating'), ['action' => 'delete', $rating->id], ['confirm' => __('Are you sure you want to delete # {0}?', $rating->id)]) ?> </li>
         <li><?= $this->Html->link(__('List Ratings'), ['action' => 'index']) ?> </li>
         <li><?= $this->Html->link(__('New Rating'), ['action' => 'add']) ?> </li>
-        <li><?= $this->Html->link(__('List Users'), ['controller' => 'Users', 'action' => 'index']) ?> </li>
-        <li><?= $this->Html->link(__('New User'), ['controller' => 'Users', 'action' => 'add']) ?> </li>
-        <li><?= $this->Html->link(__('List Professionals'), ['controller' => 'Professionals', 'action' => 'index']) ?> </li>
-        <li><?= $this->Html->link(__('New Professional'), ['controller' => 'Professionals', 'action' => 'add']) ?> </li>
     </ul>
 </nav>
 <div class="ratings view large-9 medium-8 columns content">

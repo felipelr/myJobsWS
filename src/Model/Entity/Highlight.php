@@ -6,12 +6,17 @@ use Cake\ORM\Entity;
 /**
  * Highlight Entity
  *
+ * @property int $id
  * @property int|null $professional_id
  * @property \Cake\I18n\FrozenTime|null $created
  * @property \Cake\I18n\FrozenTime|null $finish
  * @property int|null $position
+ * @property int|null $subcategory_id
+ * @property int|null $service_id
  *
  * @property \App\Model\Entity\Professional $professional
+ * @property \App\Model\Entity\Subcategory $subcategory
+ * @property \App\Model\Entity\Service $service
  */
 class Highlight extends Entity
 {
@@ -29,6 +34,10 @@ class Highlight extends Entity
         'created' => true,
         'finish' => true,
         'position' => true,
-        'professional' => true
+        'subcategory_id' => true,
+        'service_id' => true,
+        'professional' => true,
+        'subcategory' => true,
+        'service' => true
     ];
 }

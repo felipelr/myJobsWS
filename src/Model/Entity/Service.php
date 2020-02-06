@@ -8,6 +8,7 @@ use Cake\ORM\Entity;
  *
  * @property int $id
  * @property int|null $subcategory_id
+ * @property string|null $title
  * @property string|null $description
  * @property bool|null $active
  *
@@ -27,6 +28,7 @@ class Service extends Entity
      */
     protected $_accessible = [
         'subcategory_id' => true,
+        'title' => true,
         'description' => true,
         'active' => true,
         'subcategory' => true,

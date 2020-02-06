@@ -10,6 +10,10 @@ use Cake\Validation\Validator;
  * Services Model
  *
  * @property \App\Model\Table\SubcategoriesTable|\Cake\ORM\Association\BelongsTo $Subcategories
+ * @property |\Cake\ORM\Association\HasMany $Calls
+ * @property |\Cake\ORM\Association\HasMany $ClientsServiceOrders
+ * @property |\Cake\ORM\Association\HasMany $Highlights
+ * @property |\Cake\ORM\Association\HasMany $ProfessionalComments
  * @property \App\Model\Table\ProfessionalServicesTable|\Cake\ORM\Association\HasMany $ProfessionalServices
  *
  * @method \App\Model\Entity\Service get($primaryKey, $options = [])
@@ -40,6 +44,18 @@ class ServicesTable extends Table
         $this->belongsTo('Subcategories', [
             'foreignKey' => 'subcategory_id'
         ]);
+        $this->hasMany('Calls', [
+            'foreignKey' => 'service_id'
+        ]);
+        $this->hasMany('ClientsServiceOrders', [
+            'foreignKey' => 'service_id'
+        ]);
+        $this->hasMany('Highlights', [
+            'foreignKey' => 'service_id'
+        ]);
+        $this->hasMany('ProfessionalComments', [
+            'foreignKey' => 'service_id'
+        ]);
         $this->hasMany('ProfessionalServices', [
             'foreignKey' => 'service_id'
         ]);
@@ -58,8 +74,12 @@ class ServicesTable extends Table
             ->allowEmptyString('id', 'create');
 
         $validator
+            ->scalar('title')
+            ->maxLength('title', 255)
+            ->allowEmptyString('title');
+
+        $validator
             ->scalar('description')
-            ->maxLength('description', 255)
             ->allowEmptyString('description');
 
         $validator
