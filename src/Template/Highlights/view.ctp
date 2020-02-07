@@ -38,11 +38,11 @@
         </tr>
         <tr>
             <th scope="row"><?= __('Created') ?></th>
-            <td><?= h($highlight->created) ?></td>
+            <td><?= h($highlight->created->i18nFormat('dd/MM/yyyy HH:mm')) ?></td>
         </tr>
         <tr>
             <th scope="row"><?= __('Finish') ?></th>
-            <td><?= h($highlight->finish) ?></td>
+            <td><?= h($highlight->finish->i18nFormat('dd/MM/yyyy HH:mm')) ?></td>
         </tr>
     </table>
 </div>

@@ -16,12 +16,27 @@ class HighlightsController extends AppController
 {
     public function index()
     {
-        $this->paginate = [
-            'contain' => ['Professionals', 'Services', 'Subcategories']
-        ];
+        $search = $this->request->getQuery('search', '');
+        if ($search != '') {
+            $this->paginate = [
+                'contain' => ['Professionals', 'Services', 'Subcategories'],
+                'conditions' => [
+                    'OR' => [
+                        'Professionals.name LIKE' => "%$search%",
+                        'Subcategories.description LIKE' => "%$search%",
+                        'Services.title LIKE' => "%$search%",
+                    ]
+                ]
+            ];
+        } else {
+            $this->paginate = [
+                'contain' => ['Professionals', 'Services', 'Subcategories']
+            ];
+        }
+
         $highlights = $this->paginate($this->Highlights);
 
-        $this->set(compact('highlights'));
+        $this->set(compact('highlights', 'search'));
     }
 
     public function view($id = null)
@@ -80,7 +95,7 @@ class HighlightsController extends AppController
             }
             $this->Flash->error(__('The service could not be saved. Please, try again.'));
         }
-        
+
         $professionals = $this->Highlights->Professionals->find('list', [
             'keyField' => 'id',
             'valueField' => 'name',

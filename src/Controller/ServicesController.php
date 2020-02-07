@@ -9,12 +9,27 @@ class ServicesController extends AppController
 {
     public function index()
     {
-        $this->paginate = [
-            'contain' => ['Subcategories']
-        ];
+        $search = $this->request->getQuery('search', '');
+        if ($search != '') {
+            $this->paginate = [
+                'contain' => ['Subcategories'],
+                'conditions' => [
+                    'OR' => [
+                        'Services.description LIKE' => "%$search%",
+                        'Services.title LIKE' => "%$search%",
+                        'Subcategories.description LIKE' => "%$search%",
+                    ]
+                ]
+            ];
+        } else {
+            $this->paginate = [
+                'contain' => ['Subcategories']
+            ];
+        }
+        
         $services = $this->paginate($this->Services);
 
-        $this->set(compact('services'));
+        $this->set(compact('services', 'search'));
     }
 
     public function view($id = null)

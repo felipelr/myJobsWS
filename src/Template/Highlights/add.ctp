@@ -30,7 +30,7 @@ $this->end();
         echo $this->Form->control('subcategory_id', ['options' => $subcategories, 'empty' => true]);
         echo $this->Form->control('service_id', ['options' => $services, 'empty' => true]);
         echo $this->Form->control('finish', [
-            'label' => 'Finish - Year/Month/Day Hour:Minute',
+            'label' => 'Finish - Day/Month/Year Hour:Minute',
             'minYear' => date('Y'),
             'maxYear' => date('Y') + 10,
             'empty' => true,
@@ -38,7 +38,10 @@ $this->end();
             'month' => ['class' => 'control'],
             'day' => ['class' => 'control'],
             'hour' => ['class' => 'control'],
-            'minute' => ['class' => 'control']
+            'minute' => ['class' => 'control'],
+            'templates' => [ 
+                'dateWidget' => '{{day}}{{month}}{{year}}{{hour}}{{minute}}{{second}}{{meridian}}',
+            ]
         ]);
         echo $this->Form->control('position');
         ?>

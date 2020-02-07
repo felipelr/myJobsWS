@@ -1,8 +1,20 @@
 <?php
+
 /**
  * @var \App\View\AppView $this
  * @var \App\Model\Entity\Service[]|\Cake\Collection\CollectionInterface $services
  */
+$this->start('css');
+?>
+<style>
+    .row {
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-end;
+    }
+</style>
+<?php
+$this->end();
 ?>
 <nav class="large-3 medium-4 columns" id="actions-sidebar">
     <ul class="side-nav">
@@ -12,6 +24,16 @@
 </nav>
 <div class="services index large-9 medium-8 columns content">
     <h3><?= __('Services') ?></h3>
+    <form>
+        <div class="row">
+            <div style="padding-right: 20px;">
+                <input placeholder="Type here" name="search" type="text" value="<?= $search ?>" />
+            </div>
+            <div>
+                <?= $this->Form->button(__('Search')) ?>
+            </div>
+        </div>
+    </form>
     <table cellpadding="0" cellspacing="0">
         <thead>
             <tr>
@@ -23,18 +45,18 @@
             </tr>
         </thead>
         <tbody>
-            <?php foreach ($services as $service): ?>
-            <tr>
-                <td><?= $this->Number->format($service->id) ?></td>
-                <td><?= h($service->title) ?></td>
-                <td><?= h($service->description) ?></td>
-                <td><?= h($service->subcategory->description) ?></td>
-                <td class="actions">
-                    <?= $this->Html->link(__('View'), ['action' => 'view', $service->id]) ?>
-                    <?= $this->Html->link(__('Edit'), ['action' => 'edit', $service->id]) ?>
-                    <?= $this->Form->postLink(__('Delete'), ['action' => 'delete', $service->id], ['confirm' => __('Are you sure you want to delete # {0}?', $service->id)]) ?>
-                </td>
-            </tr>
+            <?php foreach ($services as $service) : ?>
+                <tr>
+                    <td><?= $this->Number->format($service->id) ?></td>
+                    <td><?= h($service->title) ?></td>
+                    <td><?= h($service->description) ?></td>
+                    <td><?= h($service->subcategory->description) ?></td>
+                    <td class="actions">
+                        <?= $this->Html->link(__('View'), ['action' => 'view', $service->id]) ?>
+                        <?= $this->Html->link(__('Edit'), ['action' => 'edit', $service->id]) ?>
+                        <?= $this->Form->postLink(__('Delete'), ['action' => 'delete', $service->id], ['confirm' => __('Are you sure you want to delete # {0}?', $service->id)]) ?>
+                    </td>
+                </tr>
             <?php endforeach; ?>
         </tbody>
     </table>

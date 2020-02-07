@@ -26,8 +26,8 @@
             <tr>
                 <td><?= $this->Number->format($user->id) ?></td>
                 <td><?= h($user->email) ?></td>
-                <td><?= h($user->created) ?></td>
-                <td><?= h($user->modified) ?></td>
+                <td><?= h($user->created->i18nFormat('dd/MM/yyyy HH:mm')) ?></td>
+                <td><?= h($user->modified->i18nFormat('dd/MM/yyyy HH:mm')) ?></td>
                 <td class="actions"></td>
             </tr>
             <?php endforeach; ?>
