@@ -13,7 +13,7 @@ use App\Controller\AppController;
  */
 class ProfessionalCommentsController extends AppController
 {
-    public function view($professional_id = null, $service_id = null)
+    public function comments($professional_id = null, $service_id = null)
     {
         $professionalComments = [];
         $query = $this->ProfessionalComments->find('all')

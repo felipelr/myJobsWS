@@ -14,11 +14,22 @@ use Cake\Datasource\ConnectionManager;
  */
 class SubcategoriesController extends AppController
 {
-    public function view($idCategoria = null)
+    public function category($id = null)
+    {
+        $subcategories = $this->Subcategories->find('all')
+            ->where(['Subcategories.category_id = ' => $id]);
+
+        $this->set([
+            'subcategories' => $subcategories,
+            '_serialize' => ['subcategories']
+        ]);
+    }
+
+    public function getByCategory($idCategoria = null)
     {
         $connection = ConnectionManager::get('default');
         $results = $connection->execute(
-        "SELECT subcategories.id, subcategories.category_id, 
+            "SELECT subcategories.id, subcategories.category_id, 
                 subcategories.description, subcategories.icon, subcategories.active, COUNT(DISTINCT(services.id)) AS countServices, 
                 COUNT(DISTINCT(professional_services.professional_id)) as countProfessionals, COUNT(DISTINCT(calls.id)) as Atendimentos
         FROM subcategories 
@@ -26,7 +37,8 @@ class SubcategoriesController extends AppController
         LEFT JOIN professional_services on (professional_services.service_id = services.id) 
         LEFT JOIN calls ON(calls.service_id = services.id)
         WHERE subcategories.category_id = $idCategoria 
-        GROUP BY subcategories.id, subcategories.category_id, subcategories.description, subcategories.icon, subcategories.active")
+        GROUP BY subcategories.id, subcategories.category_id, subcategories.description, subcategories.icon, subcategories.active"
+        )
             ->fetchAll('assoc');
 
         $this->set([

@@ -26,7 +26,7 @@ class ServicesController extends AppController
                 'contain' => ['Subcategories']
             ];
         }
-        
+
         $services = $this->paginate($this->Services);
 
         $this->set(compact('services', 'search'));
@@ -94,6 +94,17 @@ class ServicesController extends AppController
         }
 
         return $this->redirect(['action' => 'index']);
+    }
+
+    public function subcategory($id = null)
+    {
+        $services = $this->Services->find('all')
+            ->where(['Services.subcategory_id = ' => $id]);
+
+        $this->set([
+            'services' => $services,
+            '_serialize' => ['services']
+        ]);
     }
 
     public function getBySubcategory($idSubcategory = null)

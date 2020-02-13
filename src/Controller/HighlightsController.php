@@ -129,7 +129,7 @@ class HighlightsController extends AppController
         return $this->redirect(['action' => 'index']);
     }
 
-    public function highlights()
+    public function all()
     {
         $connection = ConnectionManager::get('default');
         $results = $connection->execute(

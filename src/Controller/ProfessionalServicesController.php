@@ -13,15 +13,27 @@ use App\Controller\AppController;
  */
 class ProfessionalServicesController extends AppController
 {
-    public function view($professional_id = null)
+    public function services($professional_id = null)
     {
+        $type = $this->request->getQuery('type', 0);
         $professionalServices = [];
-        $query = $this->ProfessionalServices->find('all')
-            ->where(['ProfessionalServices.professional_id = ' => $professional_id])
-            ->contain(['Services']);
 
-        foreach ($query as $row) {
-            $professionalServices[] = $row;
+        if ($type == 0) {
+            $query = $this->ProfessionalServices->find('all')
+                ->where(['ProfessionalServices.professional_id = ' => $professional_id])
+                ->contain(['Services']);
+
+            foreach ($query as $row) {
+                $professionalServices[] = $row;
+            }
+        } else {
+            $query = $this->ProfessionalServices->find('all')
+                ->where(['ProfessionalServices.professional_id = ' => $professional_id])
+                ->contain(['Services', 'Services.Subcategories', 'Services.Subcategories.Categories']);
+
+            foreach ($query as $row) {
+                $professionalServices[] = $row;
+            }
         }
 
         $this->set([
@@ -29,13 +41,4 @@ class ProfessionalServicesController extends AppController
             '_serialize' => ['professionalServices']
         ]);
     }
-
-    public function add()
-    { }
-
-    public function edit($id = null)
-    { }
-
-    public function delete($id = null)
-    { }
 }
