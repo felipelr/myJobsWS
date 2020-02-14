@@ -34,6 +34,8 @@ class ProfessionalServicesTable extends Table
         parent::initialize($config);
 
         $this->setTable('professional_services');
+        $this->setDisplayField('id');
+        $this->setPrimaryKey('id');
 
         $this->belongsTo('Professionals', [
             'foreignKey' => 'professional_id'
@@ -52,11 +54,17 @@ class ProfessionalServicesTable extends Table
     public function validationDefault(Validator $validator)
     {
         $validator
+            ->allowEmptyString('id', 'create');
+
+        $validator
             ->allowEmptyString('rating');
 
         $validator
             ->integer('amount_ratings')
             ->allowEmptyString('amount_ratings');
+
+        $validator
+            ->allowEmptyString('active');
 
         return $validator;
     }

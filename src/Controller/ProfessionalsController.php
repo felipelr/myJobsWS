@@ -126,24 +126,22 @@ class ProfessionalsController extends AppController
             ]);
         }
     }
- 
+
     public function getByService($idService = null)
-    { 
+    {
         $connection = ConnectionManager::get('default');
         $professionals = $connection->execute(
-        "   SELECT p.id, p.name, p.description, ps.rating, ps.amount_ratings, '\"87 Atendimentos realizados,  0.82km de você\"' AS info, photo 
+            "SELECT p.id, p.name, p.description, ps.rating, ps.amount_ratings, '\"87 Atendimentos realizados,  0.82km de você\"' AS info, photo 
             FROM professionals AS p 
-            INNER JOIN professional_services AS ps ON(ps.professional_id = p.id)
+            INNER JOIN professional_services AS ps ON(ps.professional_id = p.id AND ps.active = 1)
             INNER JOIN services AS s ON(s.id = ps.service_id)
-            WHERE 
-            ps.service_id = $idService ")
-        ->fetchAll('assoc');
+            WHERE ps.service_id = $idService "
+        )
+            ->fetchAll('assoc');
 
         $this->set([
-            'professionals' => $professionals, 
+            'professionals' => $professionals,
             '_serialize' => ['professionals']
         ]);
-
     }
-
 }

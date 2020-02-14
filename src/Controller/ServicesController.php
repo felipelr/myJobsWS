@@ -111,8 +111,9 @@ class ServicesController extends AppController
     {
         $connection = ConnectionManager::get('default');
         $services = $connection->execute(
-            "   SELECT  s.*, COUNT(p.professional_id) AS Profissionais  FROM services AS s
-            LEFT JOIN professional_services AS p ON(s.id = p.service_id)
+            "SELECT s.*, COUNT(p.professional_id) AS Profissionais 
+            FROM services AS s
+            LEFT JOIN professional_services AS p ON(s.id = p.service_id AND p.active = 1)
             WHERE subcategory_id = $idSubcategory
             GROUP BY s.id
             ORDER BY title "

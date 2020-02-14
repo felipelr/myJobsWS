@@ -6,10 +6,12 @@ use Cake\ORM\Entity;
 /**
  * ProfessionalService Entity
  *
+ * @property int $id
  * @property int|null $professional_id
  * @property int|null $service_id
  * @property int|null $rating
  * @property int|null $amount_ratings
+ * @property int|null $active
  *
  * @property \App\Model\Entity\Professional $professional
  * @property \App\Model\Entity\Service $service
@@ -30,6 +32,7 @@ class ProfessionalService extends Entity
         'service_id' => true,
         'rating' => true,
         'amount_ratings' => true,
+        'active' => true,
         'professional' => true,
         'service' => true
     ];
