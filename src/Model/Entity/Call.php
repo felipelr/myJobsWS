@@ -7,14 +7,14 @@ use Cake\ORM\Entity;
  * Call Entity
  *
  * @property int $id
- * @property int $user_id
+ * @property int $client_id
  * @property int $professional_id
  * @property int $service_id
  * @property string $description
  * @property \Cake\I18n\FrozenTime $created
  * @property \Cake\I18n\FrozenTime $modified
  *
- * @property \App\Model\Entity\User $user
+ * @property \App\Model\Entity\Client $client
  * @property \App\Model\Entity\Professional $professional
  * @property \App\Model\Entity\Service $service
  */
@@ -30,14 +30,11 @@ class Call extends Entity
      * @var array
      */
     protected $_accessible = [
-        'user_id' => true,
+        'client_id' => true,
         'professional_id' => true,
         'service_id' => true,
         'description' => true,
         'created' => true,
-        'modified' => true,
-        'user' => true,
-        'professional' => true,
-        'service' => true
+        'modified' => true, 
     ];
 }

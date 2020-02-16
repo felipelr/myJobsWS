@@ -42,8 +42,8 @@ class CallsTable extends Table
 
         $this->addBehavior('Timestamp');
 
-        $this->belongsTo('Users', [
-            'foreignKey' => 'user_id',
+        $this->belongsTo('Clients', [
+            'foreignKey' => 'client_id',
             'joinType' => 'INNER'
         ]);
         $this->belongsTo('Professionals', [
@@ -84,7 +84,7 @@ class CallsTable extends Table
      */
     public function buildRules(RulesChecker $rules)
     {
-        $rules->add($rules->existsIn(['user_id'], 'Users'));
+        $rules->add($rules->existsIn(['client_id'], 'Clients'));
         $rules->add($rules->existsIn(['professional_id'], 'Professionals'));
         $rules->add($rules->existsIn(['service_id'], 'Services'));
 

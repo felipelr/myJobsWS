@@ -2,7 +2,7 @@
 namespace App\Controller;
 
 use App\Controller\AppController;
-
+use Exception;
 /**
  * Calls Controller
  *
@@ -12,104 +12,37 @@ use App\Controller\AppController;
  */
 class CallsController extends AppController
 {
-    /**
-     * Index method
-     *
-     * @return \Cake\Http\Response|void
-     */
-    public function index()
-    {
-        $this->paginate = [
-            'contain' => ['Users', 'Professionals', 'Services']
-        ];
-        $calls = $this->paginate($this->Calls);
-
-        $this->set(compact('calls'));
-    }
-
-    /**
-     * View method
-     *
-     * @param string|null $id Call id.
-     * @return \Cake\Http\Response|void
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
-     */
-    public function view($id = null)
-    {
-        $call = $this->Calls->get($id, [
-            'contain' => ['Users', 'Professionals', 'Services']
-        ]);
-
-        $this->set('call', $call);
-    }
-
-    /**
-     * Add method
-     *
-     * @return \Cake\Http\Response|null Redirects on successful add, renders view otherwise.
-     */
     public function add()
     {
+        $errorMessage = '';
         $call = $this->Calls->newEntity();
-        if ($this->request->is('post')) {
-            $call = $this->Calls->patchEntity($call, $this->request->getData());
-            if ($this->Calls->save($call)) {
-                $this->Flash->success(__('The call has been saved.'));
-
-                return $this->redirect(['action' => 'index']);
-            }
-            $this->Flash->error(__('The call could not be saved. Please, try again.'));
-        }
-        $users = $this->Calls->Users->find('list', ['limit' => 200]);
-        $professionals = $this->Calls->Professionals->find('list', ['limit' => 200]);
-        $services = $this->Calls->Services->find('list', ['limit' => 200]);
-        $this->set(compact('call', 'users', 'professionals', 'services'));
-    }
-
-    /**
-     * Edit method
-     *
-     * @param string|null $id Call id.
-     * @return \Cake\Http\Response|null Redirects on successful edit, renders view otherwise.
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
-     */
-    public function edit($id = null)
-    {
-        $call = $this->Calls->get($id, [
-            'contain' => []
-        ]);
         if ($this->request->is(['patch', 'post', 'put'])) {
-            $call = $this->Calls->patchEntity($call, $this->request->getData());
-            if ($this->Calls->save($call)) {
-                $this->Flash->success(__('The call has been saved.'));
+            try {
+                $calls = $this->Calls->patchEntity($call, $this->request->getData());
 
-                return $this->redirect(['action' => 'index']);
+                if ($this->Calls->save($calls)) {
+                    //sucesso                
+                    $errorMessage = '';
+                } else {
+                    //erro
+                    $errorMessage = 'Não foi possível salvar o chamado.';
+                }
+            } catch (Exception $ex) {
+                $errorMessage = $ex->getMessage();
             }
-            $this->Flash->error(__('The call could not be saved. Please, try again.'));
         }
-        $users = $this->Calls->Users->find('list', ['limit' => 200]);
-        $professionals = $this->Calls->Professionals->find('list', ['limit' => 200]);
-        $services = $this->Calls->Services->find('list', ['limit' => 200]);
-        $this->set(compact('call', 'users', 'professionals', 'services'));
-    }
 
-    /**
-     * Delete method
-     *
-     * @param string|null $id Call id.
-     * @return \Cake\Http\Response|null Redirects to index.
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
-     */
-    public function delete($id = null)
-    {
-        $this->request->allowMethod(['post', 'delete']);
-        $call = $this->Calls->get($id);
-        if ($this->Calls->delete($call)) {
-            $this->Flash->success(__('The call has been deleted.'));
+        if ($errorMessage == '') {
+            $this->set([
+                'calls' => $calls,
+                '_serialize' => ['calls']
+            ]);
         } else {
-            $this->Flash->error(__('The call could not be deleted. Please, try again.'));
+            $this->set([
+                'error' => true,
+                'errorMessage' => $errorMessage,
+                '_serialize' => ['error', 'errorMessage']
+            ]);
         }
-
-        return $this->redirect(['action' => 'index']);
     }
 }
