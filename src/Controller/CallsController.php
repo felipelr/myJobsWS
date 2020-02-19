@@ -12,20 +12,20 @@ use Exception;
  */
 class CallsController extends AppController
 {
-    public function add()
+    public function addCall()
     {
         $errorMessage = '';
         $call = $this->Calls->newEntity();
         if ($this->request->is(['patch', 'post', 'put'])) {
             try {
                 $calls = $this->Calls->patchEntity($call, $this->request->getData());
-
+ 
                 if ($this->Calls->save($calls)) {
                     //sucesso                
                     $errorMessage = '';
                 } else {
                     //erro
-                    $errorMessage = 'Não foi possível salvar o chamado.';
+                    $errorMessage = 'Não foi possível salvar o chamado.' + $calls;
                 }
             } catch (Exception $ex) {
                 $errorMessage = $ex->getMessage();
