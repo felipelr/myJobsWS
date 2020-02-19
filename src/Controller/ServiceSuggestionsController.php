@@ -20,7 +20,10 @@ class ServiceSuggestionsController extends AppController
             'conditions' => ['professional_id' => $id]
         ])->all();
 
-        $this->set('serviceSuggestions', $serviceSuggestions);
+        $this->set([
+            'serviceSuggestions' => $serviceSuggestions,
+            '_serialize' => ['serviceSuggestions']
+        ]);
     }
 
     public function new()
