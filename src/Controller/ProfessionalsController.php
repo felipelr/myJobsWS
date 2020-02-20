@@ -131,7 +131,7 @@ class ProfessionalsController extends AppController
     {
         $connection = ConnectionManager::get('default');
         $professionals = $connection->execute(
-            "SELECT p.id, p.name, p.description, ps.rating, ps.amount_ratings, '\"87 Atendimentos realizados,  0.82km de você\"' AS info, photo 
+            "SELECT p.id, p.name, p.description, ps.rating, ps.amount_ratings, '\"87 Atendimentos realizados,  0.82km de você\"' AS info, photo, backImage
             FROM professionals AS p 
             INNER JOIN professional_services AS ps ON(ps.professional_id = p.id AND ps.active = 1)
             INNER JOIN services AS s ON(s.id = ps.service_id)
