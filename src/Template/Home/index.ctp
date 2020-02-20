@@ -9,6 +9,7 @@
         <li><?= $this->Html->link(__('List Users'), ['controller' => 'Users', 'action' => 'index']) ?></li>
         <li><?= $this->Html->link(__('List Services'), ['controller' => 'Services', 'action' => 'index']) ?></li>
         <li><?= $this->Html->link(__('List Highlights'), ['controller' => 'Highlights', 'action' => 'index']) ?></li>
+        <li><?= $this->Html->link(__('List Service Suggestions'), ['controller' => 'ServiceSuggestions', 'action' => 'index']) ?></li>
     </ul>
 </nav>
 <div class="index large-9 medium-8 columns content">
