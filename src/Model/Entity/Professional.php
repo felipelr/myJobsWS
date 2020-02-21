@@ -17,14 +17,19 @@ use Cake\ORM\Entity;
  * @property \Cake\I18n\FrozenTime|null $created
  * @property \Cake\I18n\FrozenTime|null $modified
  * @property int $active
+ * @property int|null $categorie_id
+ * @property int|null $websocket
  *
  * @property \App\Model\Entity\User $user
  * @property \App\Model\Entity\Call[] $calls
+ * @property \App\Model\Entity\ChatMessage[] $chat_messages
  * @property \App\Model\Entity\Highlight[] $highlights
+ * @property \App\Model\Entity\ProfessionalComment[] $professional_comments
  * @property \App\Model\Entity\ProfessionalPhone[] $professional_phones
  * @property \App\Model\Entity\ProfessionalService[] $professional_services
  * @property \App\Model\Entity\ProfessionalsAddress[] $professionals_addresses
  * @property \App\Model\Entity\Rating[] $ratings
+ * @property \App\Model\Entity\Story[] $stories
  */
 class Professional extends Entity
 {
@@ -48,12 +53,17 @@ class Professional extends Entity
         'created' => true,
         'modified' => true,
         'active' => true,
+        'categorie_id' => true,
+        'websocket' => true,
         'user' => true,
         'calls' => true,
+        'chat_messages' => true,
         'highlights' => true,
+        'professional_comments' => true,
         'professional_phones' => true,
         'professional_services' => true,
         'professionals_addresses' => true,
-        'ratings' => true
+        'ratings' => true,
+        'stories' => true
     ];
 }

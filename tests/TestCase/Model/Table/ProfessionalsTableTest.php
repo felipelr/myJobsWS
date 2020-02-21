@@ -26,11 +26,14 @@ class ProfessionalsTableTest extends TestCase
         'app.Professionals',
         'app.Users',
         'app.Calls',
+        'app.ChatMessages',
         'app.Highlights',
+        'app.ProfessionalComments',
         'app.ProfessionalPhones',
         'app.ProfessionalServices',
         'app.ProfessionalsAddresses',
-        'app.Ratings'
+        'app.Ratings',
+        'app.Stories'
     ];
 
     /**

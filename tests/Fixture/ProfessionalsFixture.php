@@ -26,11 +26,15 @@ class ProfessionalsFixture extends TestFixture
         'created' => ['type' => 'datetime', 'length' => null, 'null' => true, 'default' => null, 'comment' => '', 'precision' => null],
         'modified' => ['type' => 'datetime', 'length' => null, 'null' => true, 'default' => null, 'comment' => '', 'precision' => null],
         'active' => ['type' => 'tinyinteger', 'length' => 4, 'unsigned' => false, 'null' => false, 'default' => '1', 'comment' => '', 'precision' => null],
+        'categorie_id' => ['type' => 'integer', 'length' => 11, 'unsigned' => false, 'null' => true, 'default' => null, 'comment' => '', 'precision' => null, 'autoIncrement' => null],
+        'websocket' => ['type' => 'integer', 'length' => 11, 'unsigned' => false, 'null' => true, 'default' => '0', 'comment' => '', 'precision' => null, 'autoIncrement' => null],
         '_indexes' => [
             'professionals_user_id_fk' => ['type' => 'index', 'columns' => ['user_id'], 'length' => []],
+            'categories_id_professionals_fk' => ['type' => 'index', 'columns' => ['categorie_id'], 'length' => []],
         ],
         '_constraints' => [
             'primary' => ['type' => 'primary', 'columns' => ['id'], 'length' => []],
+            'categories_id_professionals_fk' => ['type' => 'foreign', 'columns' => ['categorie_id'], 'references' => ['categories', 'id'], 'update' => 'restrict', 'delete' => 'restrict', 'length' => []],
             'professionals_user_id_fk' => ['type' => 'foreign', 'columns' => ['user_id'], 'references' => ['users', 'id'], 'update' => 'restrict', 'delete' => 'restrict', 'length' => []],
         ],
         '_options' => [
@@ -53,12 +57,14 @@ class ProfessionalsFixture extends TestFixture
                 'name' => 'Lorem ipsum dolor sit amet',
                 'description' => 'Lorem ipsum dolor sit amet, aliquet feugiat. Convallis morbi fringilla gravida, phasellus feugiat dapibus velit nunc, pulvinar eget sollicitudin venenatis cum nullam, vivamus ut a sed, mollitia lectus. Nulla vestibulum massa neque ut et, id hendrerit sit, feugiat in taciti enim proin nibh, tempor dignissim, rhoncus duis vestibulum nunc mattis convallis.',
                 'document' => 'Lorem ipsum dolor sit amet',
-                'date_birth' => '2020-01-24',
+                'date_birth' => '2020-02-21',
                 'photo' => 'Lorem ipsum dolor sit amet',
                 'backImage' => 'Lorem ipsum dolor sit amet',
-                'created' => '2020-01-24 14:47:49',
-                'modified' => '2020-01-24 14:47:49',
-                'active' => 1
+                'created' => '2020-02-21 12:45:15',
+                'modified' => '2020-02-21 12:45:15',
+                'active' => 1,
+                'categorie_id' => 1,
+                'websocket' => 1
             ],
         ];
         parent::init();

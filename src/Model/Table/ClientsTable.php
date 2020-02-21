@@ -10,7 +10,11 @@ use Cake\Validation\Validator;
  * Clients Model
  *
  * @property \App\Model\Table\UsersTable|\Cake\ORM\Association\BelongsTo $Users
- * @property |\Cake\ORM\Association\HasMany $ClientsAddresses
+ * @property |\Cake\ORM\Association\HasMany $Calls
+ * @property |\Cake\ORM\Association\HasMany $ChatMessages
+ * @property \App\Model\Table\ClientsAddressesTable|\Cake\ORM\Association\HasMany $ClientsAddresses
+ * @property |\Cake\ORM\Association\HasMany $ClientsServiceOrders
+ * @property |\Cake\ORM\Association\HasMany $ProfessionalComments
  *
  * @method \App\Model\Entity\Client get($primaryKey, $options = [])
  * @method \App\Model\Entity\Client newEntity($data = null, array $options = [])
@@ -45,7 +49,19 @@ class ClientsTable extends Table
             'foreignKey' => 'user_id',
             'joinType' => 'INNER'
         ]);
+        $this->hasMany('Calls', [
+            'foreignKey' => 'client_id'
+        ]);
+        $this->hasMany('ChatMessages', [
+            'foreignKey' => 'client_id'
+        ]);
         $this->hasMany('ClientsAddresses', [
+            'foreignKey' => 'client_id'
+        ]);
+        $this->hasMany('ClientsServiceOrders', [
+            'foreignKey' => 'client_id'
+        ]);
+        $this->hasMany('ProfessionalComments', [
             'foreignKey' => 'client_id'
         ]);
     }
@@ -68,12 +84,6 @@ class ClientsTable extends Table
             ->allowEmptyString('name', false);
 
         $validator
-            ->scalar('phone')
-            ->maxLength('phone', 255)
-            ->requirePresence('phone', 'create')
-            ->allowEmptyString('phone', false);
-
-        $validator
             ->scalar('document')
             ->maxLength('document', 100)
             ->requirePresence('document', 'create')
@@ -90,13 +100,24 @@ class ClientsTable extends Table
             ->allowEmptyString('gender', false);
 
         $validator
+            ->scalar('phone')
+            ->maxLength('phone', 255)
+            ->requirePresence('phone', 'create')
+            ->allowEmptyString('phone', false);
+
+        $validator
             ->scalar('photo')
             ->maxLength('photo', 255)
-            ->allowEmptyString('photo');
+            ->requirePresence('photo', 'create')
+            ->allowEmptyString('photo', false);
 
         $validator
             ->boolean('active')
             ->allowEmptyString('active', false);
+
+        $validator
+            ->integer('websocket')
+            ->allowEmptyString('websocket', false);
 
         return $validator;
     }
