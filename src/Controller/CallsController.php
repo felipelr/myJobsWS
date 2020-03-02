@@ -18,14 +18,14 @@ class CallsController extends AppController
         $call = $this->Calls->newEntity();
         if ($this->request->is(['patch', 'post', 'put'])) {
             try {
-                $calls = $this->Calls->patchEntity($call, $this->request->getData());
+                $call = $this->Calls->patchEntity($call, $this->request->getData());
  
-                if ($this->Calls->save($calls)) {
+                if ($this->Calls->save($call)) {
                     //sucesso                
                     $errorMessage = '';
                 } else {
                     //erro
-                    $errorMessage = 'Não foi possível salvar o chamado.';
+                    $errorMessage = 'Não foi possível salvar o chamado.'. json_encode($call->getErrors());
                 }
             } catch (Exception $ex) {
                 $errorMessage = $ex->getMessage();
@@ -34,8 +34,8 @@ class CallsController extends AppController
 
         if ($errorMessage == '') {
             $this->set([
-                'calls' => $calls,
-                '_serialize' => ['calls']
+                'call' => $call,
+                '_serialize' => ['call']
             ]);
         } else {
             $this->set([
