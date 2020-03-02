@@ -509,4 +509,12 @@ class UsersController extends AppController
             ]);
         }
     }
+
+    public function validate()
+    {
+        $this->set([
+            'success' => true,
+            '_serialize' => ['success']
+        ]);
+    }
 }

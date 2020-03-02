@@ -25,7 +25,7 @@ class CallsController extends AppController
                     $errorMessage = '';
                 } else {
                     //erro
-                    $errorMessage = 'Não foi possível salvar o chamado.' + $calls;
+                    $errorMessage = 'Não foi possível salvar o chamado.';
                 }
             } catch (Exception $ex) {
                 $errorMessage = $ex->getMessage();
