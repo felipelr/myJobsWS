@@ -19,6 +19,7 @@ class ProfessionalServicesController extends AppController
         $errorMessage = '';
         if ($this->request->is('post')) {
             $professional_id = $this->request->getData('professional_id');
+            $category_id = $this->request->getData('category_id');
             $services = $this->request->getData('services');
 
             try {
@@ -36,6 +37,10 @@ class ProfessionalServicesController extends AppController
                         'professional_id' => $professional_id
                     ]
                 );
+
+                $professional = $this->ProfessionalServices->Professionals->get($professional_id);
+                $professional->categorie_id = $category_id;
+                $this->ProfessionalServices->Professionals->save($professional);
 
                 foreach ($services as $item) {
                     $row = $this->ProfessionalServices->find('all', [
