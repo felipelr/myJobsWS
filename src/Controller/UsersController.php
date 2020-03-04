@@ -205,7 +205,7 @@ class UsersController extends AppController
     {
         $user = $this->Users->newEntity();
         $errorMessage = '';
-        $newUser = null;
+        $userId = 0;
         if ($this->request->is('post')) {
             $requestData = $this->request->getData();
             $user = $this->Users->patchEntity($user, $requestData);
@@ -228,93 +228,52 @@ class UsersController extends AppController
 
             if ($errorMessage == '') {
                 $userExistent = $this->Users->find('all')
-                    ->where(['Users.email = ' => $user['email']])
+                    ->where(['Users.email = ' => $user->email])
                     ->limit(1);
 
                 if ($userExistent->count() > 0) {
-                    $user_ = $userExistent->first();
-                    $userId = $user_['id'];
-                    $roleId = $user_['role_id'];
+                    //not ok
+                    $errorMessage = 'Já existe um usuário cadastrado com esse email.';
+                } else {
+                    //fixo por enquanto
+                    $user->role_id = $requestData['userType'] == '1' ? 1 : 2;
+                    $user->password = password_hash($user->password, PASSWORD_BCRYPT, ["cost" => 10]);
 
-                    if ($requestData['userType'] == 1 && $roleId == 2) {
+                    if ($this->Users->save($user)) {
                         $client = $Clients->newEntity();
                         $client = $Clients->patchEntity($client, $requestData);
 
-                        $client['user_id'] = $userId;
+                        $userId = $user->id;
+                        $client->user_id = $userId;
+                        $client->photo = '';
 
                         if ($Clients->save($client)) {
                             //ok
                             $errorMessage = '';
-                            $newUser = $Clients->get($client['id'], [
-                                'contain' => ['Users']
-                            ]);
                         } else {
                             //not ok
                             $this->Users->delete($user);
                             $errorMessage = 'Não foi possível criar o usuário. ' . json_encode($client->errors());
                         }
-                    } else if ($requestData['userType'] == 2 && $roleId == 1) {
-                        $professional = $Professionals->newEntity();
-                        $professional = $Professionals->patchEntity($professional, $requestData);
 
-                        $professional['user_id'] = $userId;
+                        if ($errorMessage == '') {
+                            if ($requestData['userType'] == 2) {
+                                $professional = $Professionals->newEntity();
+                                $professional = $Professionals->patchEntity($professional, $requestData);
 
-                        if ($Professionals->save($professional)) {
-                            //ok
-                            $errorMessage = '';
-                            $newUser = $Professionals->get($professional['id'], [
-                                'contain' => ['Users']
-                            ]);
-                        } else {
-                            //not ok
-                            $this->Users->delete($user);
-                            $errorMessage = 'Não foi possível criar o usuário.' . json_encode($professional->getErrors());
-                            //$errorMessage = 'Não foi possível criar o usuário.';
-                        }
-                    } else {
-                        //not ok
-                        $errorMessage = 'Já existe um usuário cadastrado com esse email.';
-                    }
-                } else {
-                    //fixo por enquanto
-                    $user['role_id'] = $requestData['userType'] == '1' ? 1 : 2;
-                    $user['password'] = password_hash($user['password'], PASSWORD_BCRYPT, ["cost" => 10]);
+                                $professional->user_id = $userId;
+                                $professional->photo = '';
+                                $professional->backImage = '';
 
-                    if ($this->Users->save($user)) {
-                        if ($requestData['userType'] == 1) {
-                            $client = $Clients->newEntity();
-                            $client = $Clients->patchEntity($client, $requestData);
-
-                            $client['user_id'] = $user['id'];
-
-                            if ($Clients->save($client)) {
-                                //ok
-                                $errorMessage = '';
-                                $newUser = $Clients->get($client['id'], [
-                                    'contain' => ['Users']
-                                ]);
-                            } else {
-                                //not ok
-                                $this->Users->delete($user);
-                                $errorMessage = 'Não foi possível criar o usuário. ' . json_encode($client->errors());
-                            }
-                        } else {
-                            $professional = $Professionals->newEntity();
-                            $professional = $Professionals->patchEntity($professional, $requestData);
-
-                            $professional['user_id'] = $user['id'];
-
-                            if ($Professionals->save($professional)) {
-                                //ok
-                                $errorMessage = '';
-                                $newUser = $Professionals->get($professional['id'], [
-                                    'contain' => ['Users']
-                                ]);
-                            } else {
-                                //not ok
-                                $this->Users->delete($user);
-                                $errorMessage = 'Não foi possível criar o usuário.' . json_encode($professional->getErrors());
-                                //$errorMessage = 'Não foi possível criar o usuário.';
+                                if ($Professionals->save($professional)) {
+                                    //ok
+                                    $errorMessage = '';
+                                } else {
+                                    //not ok
+                                    $Clients->delete($client);
+                                    $this->Users->delete($user);
+                                    $errorMessage = 'Não foi possível criar o usuário.' . json_encode($professional->getErrors());
+                                }
                             }
                         }
                     } else {
@@ -326,6 +285,9 @@ class UsersController extends AppController
         }
 
         if ($errorMessage == '') {
+            $newUser = $this->Users->get($userId, [
+                'contain' => ['Clients', 'Professionals']
+            ]);
             $this->set([
                 'newUser' => $newUser,
                 '_serialize' => ['newUser']
