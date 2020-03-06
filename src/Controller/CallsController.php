@@ -1,8 +1,10 @@
 <?php
+
 namespace App\Controller;
 
 use App\Controller\AppController;
 use Exception;
+
 /**
  * Calls Controller
  *
@@ -12,6 +14,21 @@ use Exception;
  */
 class CallsController extends AppController
 {
+    public function professional($professional_id = null)
+    {
+        $calls = $this->Calls->find('all')
+            ->where([
+                'Calls.professional_id = ' => $professional_id,
+            ])
+            ->contain(['Clients', 'Services'])
+            ->all();
+
+        $this->set([
+            'calls' => $calls,
+            '_serialize' => ['calls']
+        ]);
+    }
+
     public function addCall()
     {
         $errorMessage = '';
@@ -19,13 +36,13 @@ class CallsController extends AppController
         if ($this->request->is(['patch', 'post', 'put'])) {
             try {
                 $call = $this->Calls->patchEntity($call, $this->request->getData());
- 
+
                 if ($this->Calls->save($call)) {
                     //sucesso                
                     $errorMessage = '';
                 } else {
                     //erro
-                    $errorMessage = 'Não foi possível salvar o chamado.'. json_encode($call->getErrors());
+                    $errorMessage = 'Não foi possível salvar o chamado.' . json_encode($call->getErrors());
                 }
             } catch (Exception $ex) {
                 $errorMessage = $ex->getMessage();
