@@ -9,7 +9,7 @@ use Cake\Validation\Validator;
 /**
  * Calls Model
  *
- * @property \App\Model\Table\UsersTable|\Cake\ORM\Association\BelongsTo $Users
+ * @property \App\Model\Table\ClientsTable|\Cake\ORM\Association\BelongsTo $Clients
  * @property \App\Model\Table\ProfessionalsTable|\Cake\ORM\Association\BelongsTo $Professionals
  * @property \App\Model\Table\ServicesTable|\Cake\ORM\Association\BelongsTo $Services
  *
@@ -71,6 +71,10 @@ class CallsTable extends Table
             ->scalar('description')
             ->requirePresence('description', 'create')
             ->allowEmptyString('description', false);
+
+        $validator
+            ->integer('status')
+            ->allowEmptyString('status', false);
 
         return $validator;
     }

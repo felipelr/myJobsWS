@@ -24,7 +24,7 @@ class CallsTableTest extends TestCase
      */
     public $fixtures = [
         'app.Calls',
-        'app.Users',
+        'app.Clients',
         'app.Professionals',
         'app.Services'
     ];

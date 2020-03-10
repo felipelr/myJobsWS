@@ -16,12 +16,25 @@ class CallsController extends AppController
 {
     public function professional($professional_id = null)
     {
-        $calls = $this->Calls->find('all')
-            ->where([
-                'Calls.professional_id = ' => $professional_id,
-            ])
-            ->contain(['Clients', 'Services'])
-            ->all();
+        $type = $this->request->getQuery('type', 0);
+        $calls = [];
+        if ($type == 0) {
+            $calls = $this->Calls->find('all')
+                ->where([
+                    'Calls.professional_id = ' => $professional_id,
+                    'Calls.status = ' => 1,
+                ])
+                ->contain(['Clients', 'Services', 'Services.Subcategories', 'Services.Subcategories.Categories'])
+                ->all();
+        } else {
+            $calls = $this->Calls->find('all')
+                ->where([
+                    'Calls.professional_id = ' => $professional_id,
+                    'Calls.status = ' => $type,
+                ])
+                ->contain(['Clients', 'Services', 'Services.Subcategories', 'Services.Subcategories.Categories'])
+                ->all();
+        }
 
         $this->set([
             'calls' => $calls,
@@ -36,6 +49,7 @@ class CallsController extends AppController
         if ($this->request->is(['patch', 'post', 'put'])) {
             try {
                 $call = $this->Calls->patchEntity($call, $this->request->getData());
+                $call->status = 1;
 
                 if ($this->Calls->save($call)) {
                     //sucesso                

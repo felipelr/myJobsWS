@@ -11,6 +11,7 @@ use Cake\ORM\Entity;
  * @property int $professional_id
  * @property int $service_id
  * @property string $description
+ * @property int $status
  * @property \Cake\I18n\FrozenTime $created
  * @property \Cake\I18n\FrozenTime $modified
  *
@@ -34,7 +35,11 @@ class Call extends Entity
         'professional_id' => true,
         'service_id' => true,
         'description' => true,
+        'status' => true,
         'created' => true,
-        'modified' => true, 
+        'modified' => true,
+        'client' => true,
+        'professional' => true,
+        'service' => true
     ];
 }
