@@ -7,16 +7,16 @@ use Cake\ORM\Entity;
  * Rating Entity
  *
  * @property int $id
- * @property int $user_id
+ * @property int $client_id
  * @property int $professional_id
- * @property string $description
- * @property bool|null $grade
- * @property bool|null $indication
+ * @property int $call_id
+ * @property int $rate
  * @property \Cake\I18n\FrozenTime $created
  * @property \Cake\I18n\FrozenTime|null $modified
  *
- * @property \App\Model\Entity\User $user
+ * @property \App\Model\Entity\Client $client
  * @property \App\Model\Entity\Professional $professional
+ * @property \App\Model\Entity\Call $call
  */
 class Rating extends Entity
 {
@@ -30,14 +30,14 @@ class Rating extends Entity
      * @var array
      */
     protected $_accessible = [
-        'user_id' => true,
+        'client_id' => true,
         'professional_id' => true,
-        'description' => true,
-        'grade' => true,
-        'indication' => true,
+        'call_id' => true,
+        'rate' => true,
         'created' => true,
         'modified' => true,
-        'user' => true,
-        'professional' => true
+        'client' => true,
+        'professional' => true,
+        'call' => true,
     ];
 }

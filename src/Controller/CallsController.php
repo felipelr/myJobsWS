@@ -14,6 +14,34 @@ use Exception;
  */
 class CallsController extends AppController
 {
+    public function client($client_id = null)
+    {
+        $type = $this->request->getQuery('type', 0);
+        $calls = [];
+        if ($type == 0) {
+            $calls = $this->Calls->find('all')
+                ->where([
+                    'Calls.client_id = ' => $client_id,
+                    'Calls.status = ' => 1,
+                ])
+                ->contain(['Professionals', 'Services', 'Services.Subcategories', 'Services.Subcategories.Categories', 'Ratings'])
+                ->all();
+        } else {
+            $calls = $this->Calls->find('all')
+                ->where([
+                    'Calls.client_id = ' => $client_id,
+                    'Calls.status = ' => $type,
+                ])
+                ->contain(['Professionals', 'Services', 'Services.Subcategories', 'Services.Subcategories.Categories', 'Ratings'])
+                ->all();
+        }
+
+        $this->set([
+            'calls' => $calls,
+            '_serialize' => ['calls']
+        ]);
+    }
+
     public function professional($professional_id = null)
     {
         $type = $this->request->getQuery('type', 0);

@@ -54,6 +54,10 @@ class CallsTable extends Table
             'foreignKey' => 'service_id',
             'joinType' => 'INNER'
         ]);
+        $this->hasOne('Ratings', [
+            'foreignKey' => 'call_id',
+            'joinType' => 'LEFT'
+        ]);
     }
 
     /**
