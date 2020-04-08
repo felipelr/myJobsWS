@@ -109,20 +109,39 @@ class ServicesController extends AppController
 
     public function getBySubcategory($idSubcategory = null)
     {
-        $connection = ConnectionManager::get('default');
-        $services = $connection->execute(
-            "SELECT s.*, COUNT(p.professional_id) AS Profissionais 
-            FROM services AS s
-            LEFT JOIN professional_services AS p ON(s.id = p.service_id AND p.active = 1)
-            WHERE subcategory_id = $idSubcategory
-            GROUP BY s.id
-            ORDER BY title "
-        )
-            ->fetchAll('assoc');
+        $professional_id = $this->request->getQuery('professional_id', 0);
+        if ($professional_id == 0) {
+            $connection = ConnectionManager::get('default');
+            $services = $connection->execute(
+                "SELECT s.*, COUNT(p.professional_id) AS Profissionais 
+                FROM services AS s
+                LEFT JOIN professional_services AS p ON(s.id = p.service_id AND p.active = 1)
+                WHERE subcategory_id = $idSubcategory
+                GROUP BY s.id
+                ORDER BY s.title"
+            )
+                ->fetchAll('assoc');
 
-        $this->set([
-            'services' => $services,
-            '_serialize' => ['services']
-        ]);
+            $this->set([
+                'services' => $services,
+                '_serialize' => ['services']
+            ]);
+        } else {
+            $connection = ConnectionManager::get('default');
+            $services = $connection->execute(
+                "SELECT s.*, COUNT(p.professional_id) AS Profissionais 
+                FROM services AS s
+                INNER JOIN professional_services AS p ON(s.id = p.service_id AND p.active = 1)
+                WHERE subcategory_id = $idSubcategory AND p.professional_id = $professional_id
+                GROUP BY s.id
+                ORDER BY s.title"
+            )
+                ->fetchAll('assoc');
+
+            $this->set([
+                'services' => $services,
+                '_serialize' => ['services']
+            ]);
+        }
     }
 }
