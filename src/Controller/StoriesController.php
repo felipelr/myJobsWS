@@ -70,7 +70,7 @@ class StoriesController extends AppController
                 $base64 = $image;
                 $time = round(microtime(true) * 10000);
                 $output_file = WWW_ROOT . 'img' . DS . 'story-' . $time . '.jpeg';
-                $dns_path = "http://myjobs.servicos.ws/ws" . DS . 'img' . DS . 'story-' . $time . '.jpeg';
+                $dns_path = "http://67.205.160.187/ws" . DS . 'img' . DS . 'story-' . $time . '.jpeg';
 
                 $ifp = fopen($output_file, 'wb');
                 fwrite($ifp, base64_decode($base64));

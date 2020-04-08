@@ -71,7 +71,7 @@ class ProfessionalsController extends AppController
                 if (isset($image) && $image != '') {
                     $base64 = $image;
                     $output_file = WWW_ROOT . 'img' . DS . 'professional-' . $professional['id'] . '.jpeg';
-                    $dns_path = "http://myjobs.servicos.ws/ws" . DS . 'img' . DS . 'professional-' . $professional['id'] . '.jpeg';
+                    $dns_path = "http://67.205.160.187/ws" . DS . 'img' . DS . 'professional-' . $professional['id'] . '.jpeg';
 
                     $ifp = fopen($output_file, 'wb');
                     fwrite($ifp, base64_decode($base64));
@@ -84,7 +84,7 @@ class ProfessionalsController extends AppController
                 if (isset($imageBackground) && $imageBackground != '') {
                     $base64 = $imageBackground;
                     $output_file = WWW_ROOT . 'img' . DS . 'professional-back-' . $professional['id'] . '.jpeg';
-                    $dns_path = "http://myjobs.servicos.ws/ws" . DS . 'img' . DS . 'professional-back-' . $professional['id'] . '.jpeg';
+                    $dns_path = "http://67.205.160.187/ws" . DS . 'img' . DS . 'professional-back-' . $professional['id'] . '.jpeg';
 
                     $ifp = fopen($output_file, 'wb');
                     fwrite($ifp, base64_decode($base64));
