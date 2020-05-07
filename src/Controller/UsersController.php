@@ -186,9 +186,9 @@ class UsersController extends AppController
             $errorMessage = 'O telefone é inválido.';
         }
 
-        if (!(isset($requestData['document']) && $requestData['document'] != '')) {
+        /* if (!(isset($requestData['document']) && $requestData['document'] != '')) {
             $errorMessage = 'O CPF/CNPJ é inválido.';
-        }
+        } */
 
         if (!(isset($requestData['date_birth']) && $requestData['date_birth'] != '')) {
             $errorMessage = 'A data de nascimento é inválido.';

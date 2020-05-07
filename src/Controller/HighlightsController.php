@@ -133,11 +133,14 @@ class HighlightsController extends AppController
     {
         $connection = ConnectionManager::get('default');
         $results = $connection->execute(
-            "SELECT p.id, p.name, p.description, count(ps.service_id) as qtdeServices, p.photo as imagem FROM highlights as h
-         INNER JOIN professionals as p ON(h.professional_id = p.id)
-         INNER JOIN professional_services as ps ON(ps.professional_id = p.id)
-         WHERE p.active = 1
-         GROUP BY p.id"
+            "SELECT p.id, p.name, p.description, count(ps.service_id) as qtdeServices, p.photo as imagem,
+            FLOOR(SUM(ps.rating) / SUM(CASE WHEN ps.rating = 0 THEN 0 ELSE 1 END)) AS rating, 
+            FLOOR(SUM(ps.amount_ratings) / SUM(CASE WHEN ps.rating = 0 THEN 0 ELSE 1 END)) AS amount_ratings
+            FROM highlights as h
+            INNER JOIN professionals as p ON(h.professional_id = p.id)
+            INNER JOIN professional_services as ps ON(ps.professional_id = p.id)
+            WHERE p.active = 1
+            GROUP BY p.id"
         )
             ->fetchAll('assoc');
 
@@ -151,7 +154,9 @@ class HighlightsController extends AppController
     {
         $connection = ConnectionManager::get('default');
         $results = $connection->execute(
-            "   SELECT p.id, p.name, p.description, count(ps.service_id) as qtdeServices, p.photo as imagem 
+            "   SELECT p.id, p.name, p.description, count(ps.service_id) as qtdeServices, p.photo as imagem,
+                FLOOR(SUM(ps.rating) / SUM(CASE WHEN ps.rating = 0 THEN 0 ELSE 1 END)) AS rating, 
+                FLOOR(SUM(ps.amount_ratings) / SUM(CASE WHEN ps.rating = 0 THEN 0 ELSE 1 END)) AS amount_ratings
                 FROM highlights as h
                 INNER JOIN professionals as p ON(h.professional_id = p.id)
                 INNER JOIN professional_services as ps ON(ps.professional_id = p.id)
@@ -170,7 +175,9 @@ class HighlightsController extends AppController
     {
         $connection = ConnectionManager::get('default');
         $results = $connection->execute(
-            "   SELECT p.id, p.name, p.description, count(ps.service_id) as qtdeServices, p.photo as imagem 
+            "   SELECT p.id, p.name, p.description, count(ps.service_id) as qtdeServices, p.photo as imagem,
+                FLOOR(SUM(ps.rating) / SUM(CASE WHEN ps.rating = 0 THEN 0 ELSE 1 END)) AS rating, 
+                FLOOR(SUM(ps.amount_ratings) / SUM(CASE WHEN ps.rating = 0 THEN 0 ELSE 1 END)) AS amount_ratings
                 FROM highlights as h
                 INNER JOIN professionals as p ON(h.professional_id = p.id)
                 INNER JOIN professional_services as ps ON(ps.professional_id = p.id)

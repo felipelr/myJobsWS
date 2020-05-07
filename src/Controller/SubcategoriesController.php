@@ -69,4 +69,27 @@ class SubcategoriesController extends AppController
             ]);
         }
     }
+
+    public function getAll()
+    {
+        $search = $this->request->getQuery('search', '');
+        $connection = ConnectionManager::get('default');
+        $results = $connection->execute(
+            "SELECT subcategories.id, subcategories.category_id, 
+                    subcategories.description, subcategories.icon, subcategories.active, COUNT(DISTINCT(services.id)) AS countServices, 
+                    COUNT(DISTINCT(professional_services.professional_id)) as countProfessionals, COUNT(DISTINCT(calls.id)) as Atendimentos
+                FROM subcategories 
+                LEFT JOIN services ON (subcategories.id = services.subcategory_id)
+                LEFT JOIN professional_services on (professional_services.service_id = services.id AND professional_services.active = 1) 
+                LEFT JOIN calls ON(calls.service_id = services.id)
+                WHERE subcategories.description LIKE '%$search%' 
+                GROUP BY subcategories.id, subcategories.category_id, subcategories.description, subcategories.icon, subcategories.active"
+        )
+            ->fetchAll('assoc');
+
+        $this->set([
+            'subcategories' => $results,
+            '_serialize' => ['subcategories']
+        ]);
+    }
 }

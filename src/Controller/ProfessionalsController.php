@@ -131,7 +131,9 @@ class ProfessionalsController extends AppController
     {
         $connection = ConnectionManager::get('default');
         $professionals = $connection->execute(
-            "SELECT p.id, p.name, p.description, ps.rating, ps.amount_ratings, CONCAT('\"', COUNT(c.id), (CASE WHEN COUNT(c.id) <= 1 THEN ' atendimento realizado\"' ELSE ' atendimentos realizados\"' END)) AS info, p.photo, p.backImage
+            "SELECT p.id, p.name, p.description, ps.rating, ps.amount_ratings, CONCAT('\"', COUNT(c.id), 
+            (CASE WHEN COUNT(c.id) <= 1 THEN ' atendimento realizado\"' ELSE ' atendimentos realizados\"' END)) AS info, 
+            p.photo, p.backImage
             FROM professionals AS p 
             INNER JOIN professional_services AS ps ON(ps.professional_id = p.id AND ps.active = 1)
             INNER JOIN services AS s ON(s.id = ps.service_id)

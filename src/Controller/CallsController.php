@@ -25,6 +25,7 @@ class CallsController extends AppController
                     'Calls.status = ' => 1,
                 ])
                 ->contain(['Professionals', 'Services', 'Services.Subcategories', 'Services.Subcategories.Categories', 'Ratings'])
+                ->order(['Calls.modified' => 'DESC'])
                 ->all();
         } else {
             $calls = $this->Calls->find('all')
@@ -33,6 +34,7 @@ class CallsController extends AppController
                     'Calls.status = ' => $type,
                 ])
                 ->contain(['Professionals', 'Services', 'Services.Subcategories', 'Services.Subcategories.Categories', 'Ratings'])
+                ->order(['Calls.modified' => 'DESC'])
                 ->all();
         }
 
@@ -53,6 +55,7 @@ class CallsController extends AppController
                     'Calls.status = ' => 1,
                 ])
                 ->contain(['Clients', 'Services', 'Services.Subcategories', 'Services.Subcategories.Categories'])
+                ->order(['Calls.modified' => 'DESC'])
                 ->all();
         } else {
             $calls = $this->Calls->find('all')
@@ -61,6 +64,7 @@ class CallsController extends AppController
                     'Calls.status = ' => $type,
                 ])
                 ->contain(['Clients', 'Services', 'Services.Subcategories', 'Services.Subcategories.Categories'])
+                ->order(['Calls.modified' => 'DESC'])
                 ->all();
         }
 
