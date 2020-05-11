@@ -11,6 +11,7 @@ use Cake\ORM\Entity;
  * @property int $professional_id
  * @property int $call_id
  * @property int $rate
+ * @property string $description
  * @property \Cake\I18n\FrozenTime $created
  * @property \Cake\I18n\FrozenTime|null $modified
  *
@@ -34,6 +35,7 @@ class Rating extends Entity
         'professional_id' => true,
         'call_id' => true,
         'rate' => true,
+        'description' => true,
         'created' => true,
         'modified' => true,
         'client' => true,

@@ -24,7 +24,6 @@ use Cake\ORM\Entity;
  * @property \App\Model\Entity\Call[] $calls
  * @property \App\Model\Entity\ChatMessage[] $chat_messages
  * @property \App\Model\Entity\Highlight[] $highlights
- * @property \App\Model\Entity\ProfessionalComment[] $professional_comments
  * @property \App\Model\Entity\ProfessionalPhone[] $professional_phones
  * @property \App\Model\Entity\ProfessionalService[] $professional_services
  * @property \App\Model\Entity\ProfessionalsAddress[] $professionals_addresses
@@ -59,7 +58,6 @@ class Professional extends Entity
         'calls' => true,
         'chat_messages' => true,
         'highlights' => true,
-        'professional_comments' => true,
         'professional_phones' => true,
         'professional_services' => true,
         'professionals_addresses' => true,

@@ -13,7 +13,6 @@ use Cake\Validation\Validator;
  * @property |\Cake\ORM\Association\HasMany $Calls
  * @property |\Cake\ORM\Association\HasMany $ClientsServiceOrders
  * @property |\Cake\ORM\Association\HasMany $Highlights
- * @property |\Cake\ORM\Association\HasMany $ProfessionalComments
  * @property \App\Model\Table\ProfessionalServicesTable|\Cake\ORM\Association\HasMany $ProfessionalServices
  *
  * @method \App\Model\Entity\Service get($primaryKey, $options = [])
@@ -51,9 +50,6 @@ class ServicesTable extends Table
             'foreignKey' => 'service_id'
         ]);
         $this->hasMany('Highlights', [
-            'foreignKey' => 'service_id'
-        ]);
-        $this->hasMany('ProfessionalComments', [
             'foreignKey' => 'service_id'
         ]);
         $this->hasMany('ProfessionalServices', [

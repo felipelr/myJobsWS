@@ -101,4 +101,24 @@ class RatingsController extends AppController
             ]);
         }
     }
+
+    public function comments($professional_id = null, $service_id = null)
+    {
+        $comments = [];
+        $query = $this->Ratings->find('all')
+            ->where([
+                'Ratings.professional_id = ' => $professional_id,
+                'Calls.service_id = ' => $service_id
+            ])
+            ->contain(['Clients', 'Calls']);
+
+        foreach ($query as $row) {
+            $comments[] = $row;
+        }
+
+        $this->set([
+            'comments' => $comments,
+            '_serialize' => ['comments']
+        ]);
+    }
 }

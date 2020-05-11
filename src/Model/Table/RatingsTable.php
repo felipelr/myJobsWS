@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Model\Table;
 
 use Cake\ORM\Query;
@@ -71,6 +72,12 @@ class RatingsTable extends Table
         $validator
             ->integer('rate')
             ->allowEmptyString('rate');
+
+        $validator
+            ->scalar('description')
+            ->maxLength('description', 255)
+            ->requirePresence('description', 'create')
+            ->allowEmptyString('description', false);
 
         return $validator;
     }

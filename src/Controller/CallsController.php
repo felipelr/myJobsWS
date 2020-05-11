@@ -3,6 +3,9 @@
 namespace App\Controller;
 
 use App\Controller\AppController;
+use Cake\ORM\TableRegistry;
+use Kreait\Firebase\Messaging\CloudMessage;
+use Kreait\Firebase\Factory;
 use Exception;
 
 /**
@@ -84,7 +87,48 @@ class CallsController extends AppController
                 $call->status = 1;
 
                 if ($this->Calls->save($call)) {
-                    //sucesso                
+                    //sucesso      
+                    $Professionals = TableRegistry::getTableLocator()->get('Professionals');
+                    $professional = $Professionals->find('all')
+                        ->where(['Professionals.id = ' => $call->professional_id])
+                        ->first();
+
+                    $Clients = TableRegistry::getTableLocator()->get('Clients');
+                    $client = $Clients->find('all')
+                        ->where(['Clients.id = ' => $call->client_id])
+                        ->contain(['Users'])
+                        ->first();
+
+                    if (isset($client) && isset($professional)) {
+                        $tokenApp = $client['user']['fcm_token'] == null ? '' : $client['user']['fcm_token'];
+                        $title = $client['name'];
+                        if ($tokenApp != '') {
+                            try {
+                                $factory = (new Factory())
+                                    ->withServiceAccount(WWW_ROOT . 'myjobstest-719a9-firebase-adminsdk-bjq4h-db0fea2767.json');
+                                $messaging = $factory->createMessaging();
+
+                                $messageFCM = CloudMessage::withTarget('token', $tokenApp)
+                                    ->withNotification([
+                                        'title' => $title,
+                                        'body' => 'Um novo chamado foi aberto por ' . $professional['name'],
+                                        'icon' => 'ic_launcher'
+                                    ])
+                                    ->withData([
+                                        'message' => json_encode([
+                                            'type' => 'call',
+                                            'professional_id' => $call->professional_id,
+                                            'client_id' => $call->client_id,
+                                            'call_id' => $call->id
+                                        ])
+                                    ]);
+
+                                $messaging->send($messageFCM);
+                            } catch (Exception $ex) {
+                            }
+                        }
+                    }
+
                     $errorMessage = '';
                 } else {
                     //erro

@@ -14,7 +14,6 @@ use Cake\Validation\Validator;
  * @property \App\Model\Table\CallsTable|\Cake\ORM\Association\HasMany $Calls
  * @property \App\Model\Table\ChatMessagesTable|\Cake\ORM\Association\HasMany $ChatMessages
  * @property \App\Model\Table\HighlightsTable|\Cake\ORM\Association\HasMany $Highlights
- * @property \App\Model\Table\ProfessionalCommentsTable|\Cake\ORM\Association\HasMany $ProfessionalComments
  * @property \App\Model\Table\ProfessionalPhonesTable|\Cake\ORM\Association\HasMany $ProfessionalPhones
  * @property \App\Model\Table\ProfessionalServicesTable|\Cake\ORM\Association\HasMany $ProfessionalServices
  * @property \App\Model\Table\ProfessionalsAddressesTable|\Cake\ORM\Association\HasMany $ProfessionalsAddresses
@@ -64,9 +63,6 @@ class ProfessionalsTable extends Table
             'foreignKey' => 'professional_id'
         ]);
         $this->hasMany('Highlights', [
-            'foreignKey' => 'professional_id'
-        ]);
-        $this->hasMany('ProfessionalComments', [
             'foreignKey' => 'professional_id'
         ]);
         $this->hasMany('ProfessionalPhones', [

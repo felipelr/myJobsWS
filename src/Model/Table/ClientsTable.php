@@ -14,7 +14,6 @@ use Cake\Validation\Validator;
  * @property |\Cake\ORM\Association\HasMany $ChatMessages
  * @property \App\Model\Table\ClientsAddressesTable|\Cake\ORM\Association\HasMany $ClientsAddresses
  * @property |\Cake\ORM\Association\HasMany $ClientsServiceOrders
- * @property |\Cake\ORM\Association\HasMany $ProfessionalComments
  *
  * @method \App\Model\Entity\Client get($primaryKey, $options = [])
  * @method \App\Model\Entity\Client newEntity($data = null, array $options = [])
@@ -59,9 +58,6 @@ class ClientsTable extends Table
             'foreignKey' => 'client_id'
         ]);
         $this->hasMany('ClientsServiceOrders', [
-            'foreignKey' => 'client_id'
-        ]);
-        $this->hasMany('ProfessionalComments', [
             'foreignKey' => 'client_id'
         ]);
     }

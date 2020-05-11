@@ -3,9 +3,7 @@
 namespace App\Controller;
 
 use App\Controller\AppController;
-use Cake\Http\Client;
 use Cake\ORM\TableRegistry;
-use Kreait\Firebase;
 use Kreait\Firebase\Messaging\CloudMessage;
 use Kreait\Firebase\Factory;
 use Exception;
