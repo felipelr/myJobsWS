@@ -56,6 +56,9 @@ class ProfessionalsController extends AppController
         ]);
 
         $errorMessage = '';
+        $photo = $professional->photo;
+        $backImage = $professional->backImage;
+
         if ($this->request->is(['patch', 'post', 'put'])) {
             try {
                 $image = $this->request->getData('image');
@@ -64,14 +67,27 @@ class ProfessionalsController extends AppController
                 $professionalUpdate = $this->Professionals->newEntity();
                 $professionalUpdate->id = $professional['id'];
                 $professionalUpdate->name = $professional['name'];
+                $professionalUpdate->phone = $professional['phone'];
                 $professionalUpdate->document = $professional['document'];
                 $professionalUpdate->date_birth = $professional['date_birth'];
                 $professionalUpdate->description = $professional['description'];
 
+                $professional = $this->Professionals->get($professional['id']);
+
                 if (isset($image) && $image != '') {
+                    try {
+                        $explodePhoto = explode("/", $photo);
+                        $count = count($explodePhoto);
+                        $outputFile = WWW_ROOT . 'img' . DS . $explodePhoto[$count - 1];
+                        if (file_exists($outputFile))
+                            unlink($outputFile);
+                    } catch (Exception $ex) {
+                    }
+
+                    $time = time();
                     $base64 = $image;
-                    $output_file = WWW_ROOT . 'img' . DS . 'professional-' . $professional['id'] . '.jpeg';
-                    $dns_path = "http://67.205.160.187/ws" . DS . 'img' . DS . 'professional-' . $professional['id'] . '.jpeg';
+                    $output_file = WWW_ROOT . 'img' . DS . 'professional-' . $professional['id'] . '-' . $time . '.jpeg';
+                    $dns_path = "http://67.205.160.187/ws" . DS . 'img' . DS . 'professional-' . $professional['id'] . '-' . $time  . '.jpeg';
 
                     $ifp = fopen($output_file, 'wb');
                     fwrite($ifp, base64_decode($base64));
@@ -82,9 +98,19 @@ class ProfessionalsController extends AppController
                 }
 
                 if (isset($imageBackground) && $imageBackground != '') {
+                    try {
+                        $explodePhoto = explode("/", $backImage);
+                        $count = count($explodePhoto);
+                        $outputFile = WWW_ROOT . 'img' . DS . $explodePhoto[$count - 1];
+                        if (file_exists($outputFile))
+                            unlink($outputFile);
+                    } catch (Exception $ex) {
+                    }
+
+                    $time = time();
                     $base64 = $imageBackground;
-                    $output_file = WWW_ROOT . 'img' . DS . 'professional-back-' . $professional['id'] . '.jpeg';
-                    $dns_path = "http://67.205.160.187/ws" . DS . 'img' . DS . 'professional-back-' . $professional['id'] . '.jpeg';
+                    $output_file = WWW_ROOT . 'img' . DS . 'professional-back-' . $professional['id'] . '-' . $time . '.jpeg';
+                    $dns_path = "http://67.205.160.187/ws" . DS . 'img' . DS . 'professional-back-' . $professional['id'] . '-' . $time . '.jpeg';
 
                     $ifp = fopen($output_file, 'wb');
                     fwrite($ifp, base64_decode($base64));
@@ -95,6 +121,13 @@ class ProfessionalsController extends AppController
                 }
 
                 if ($this->Professionals->save($professionalUpdate)) {
+                    $professional->name = $professionalUpdate->name;
+                    $professional->phone =  $professionalUpdate->phone;
+                    $professional->document = $professionalUpdate->document;
+                    $professional->date_birth = $professionalUpdate->date_birth ;
+                    $professional->description = $professionalUpdate->description;
+                    $professional->photo = $professionalUpdate->photo;
+                    $professional->backImage = $professionalUpdate->backImage;
                     //sucesso                
                     $errorMessage = '';
                 } else {
@@ -133,7 +166,7 @@ class ProfessionalsController extends AppController
         $professionals = $connection->execute(
             "SELECT p.id, p.name, p.description, ps.rating, ps.amount_ratings, CONCAT('\"', COUNT(c.id), 
             (CASE WHEN COUNT(c.id) <= 1 THEN ' atendimento realizado\"' ELSE ' atendimentos realizados\"' END)) AS info, 
-            p.photo, p.backImage
+            p.photo, p.backImage, p.phone
             FROM professionals AS p 
             INNER JOIN professional_services AS ps ON(ps.professional_id = p.id AND ps.active = 1)
             INNER JOIN services AS s ON(s.id = ps.service_id)

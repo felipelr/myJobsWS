@@ -28,6 +28,8 @@ class ClientsController extends AppController
         ]);
 
         $errorMessage = '';
+        $photo = $client->photo;
+
         if ($this->request->is(['patch', 'post', 'put'])) {
             try {
                 $image = $this->request->getData('image');
@@ -41,9 +43,19 @@ class ClientsController extends AppController
                 $clientUpdate->gender = $client['gender'];
 
                 if (isset($image) && $image != '') {
+                    try {
+                        $explodePhoto = explode("/", $photo);
+                        $count = count($explodePhoto);
+                        $outputFile = WWW_ROOT . 'img' . DS . $explodePhoto[$count - 1];
+                        if (file_exists($outputFile))
+                            unlink($outputFile);
+                    } catch (Exception $ex) {
+                    }
+
+                    $time = time();
                     $base64 = $image;
-                    $output_file = WWW_ROOT . 'img' . DS . 'client-' . $client['id'] . '.jpeg';
-                    $dns_path = "http://67.205.160.187/ws" . DS . 'img' . DS . 'client-' . $client['id'] . '.jpeg';
+                    $output_file = WWW_ROOT . 'img' . DS . 'client-' . $client['id'] . '-' . $time . '.jpeg';
+                    $dns_path = "http://67.205.160.187/ws" . DS . 'img' . DS . 'client-' . $client['id'] . '-' . $time . '.jpeg';
 
                     $ifp = fopen($output_file, 'wb');
                     fwrite($ifp, base64_decode($base64));
@@ -54,6 +66,12 @@ class ClientsController extends AppController
                 }
 
                 if ($this->Clients->save($clientUpdate)) {
+                    $client->name = $clientUpdate->name;
+                    $client->phone =  $clientUpdate->phone;
+                    $client->document = $clientUpdate->document;
+                    $client->date_birth = $clientUpdate->date_birth;
+                    $client->gender = $clientUpdate->gender;
+                    $client->photo = $clientUpdate->photo;
                     //sucesso                
                     $errorMessage = '';
                 } else {

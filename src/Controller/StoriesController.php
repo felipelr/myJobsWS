@@ -5,6 +5,8 @@ namespace App\Controller;
 use App\Controller\AppController;
 use Exception;
 
+use function GuzzleHttp\json_encode;
+
 /**
  * Stories Controller
  *
@@ -27,6 +29,7 @@ class StoriesController extends AppController
             ->page($page);
 
         foreach ($query as $row) {
+            $row['description'] = json_decode($row['description']);
             $stories[] = $row;
         }
 
@@ -48,6 +51,7 @@ class StoriesController extends AppController
             ->page($page);
 
         foreach ($query as $row) {
+            $row['description'] = json_decode($row['description']);
             $stories[] = $row;
         }
 
@@ -65,7 +69,7 @@ class StoriesController extends AppController
                 $image = $this->request->getData('image');
                 $story = $this->Stories->newEntity();
                 $story->professional_id =  $this->request->getData('professional_id');
-                $story->description = $this->request->getData('description');
+                $story->description = json_encode($this->request->getData('description'));
 
                 $base64 = $image;
                 $time = round(microtime(true) * 10000);
@@ -104,8 +108,10 @@ class StoriesController extends AppController
     }
 
     public function edit($id = null)
-    { }
+    {
+    }
 
     public function delete($id = null)
-    { }
+    {
+    }
 }

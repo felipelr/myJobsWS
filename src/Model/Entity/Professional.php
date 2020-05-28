@@ -10,6 +10,7 @@ use Cake\ORM\Entity;
  * @property int|null $user_id
  * @property string $name
  * @property string|null $description
+ * @property string $phone
  * @property string|null $document
  * @property \Cake\I18n\FrozenDate|null $date_birth
  * @property string|null $photo
@@ -45,6 +46,7 @@ class Professional extends Entity
         'user_id' => true,
         'name' => true,
         'description' => true,
+        'phone' => true,
         'document' => true,
         'date_birth' => true,
         'photo' => true,
