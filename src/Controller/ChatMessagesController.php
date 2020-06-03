@@ -172,4 +172,52 @@ class ChatMessagesController extends AppController
             '_serialize' => ['chatMessages']
         ]);
     }
+
+    public function teste()
+    {
+        $tokenApp = '';
+        $Professionals = TableRegistry::getTableLocator()->get('Professionals');
+        $professional = $Professionals->find('all')
+            ->where(['Professionals.id = ' => 2])
+            ->contain(['Users'])
+            ->first();
+
+        if (isset($professional)) {
+            $tokenApp = $professional['user']['fcm_token'] == null ? '' : $professional['user']['fcm_token'];
+            $title = $professional['name'];
+        }
+
+        $message = json_encode([
+            'type' => 'message',
+            'professional_id' => 2,
+            'client_id' => 36,
+            'msg_from' => 'professional'
+        ]);
+
+        if ($tokenApp != '') {
+            try {
+                $factory = (new Factory())
+                    ->withServiceAccount(WWW_ROOT . 'myjobstest-719a9-firebase-adminsdk-bjq4h-db0fea2767.json');
+                $messaging = $factory->createMessaging();
+
+                $messageFCM = CloudMessage::withTarget('token', $tokenApp)
+                    ->withNotification([
+                        'title' => $title,
+                        'body' => 'Teste de mensagem',
+                        'icon' => 'ic_launcher'
+                    ])
+                    ->withData([
+                        'message' => $message
+                    ]);
+
+                $messaging->send($messageFCM);
+            } catch (Exception $ex) {
+            }
+        }
+
+        $this->set([
+            'chatMessages' => $message,
+            '_serialize' => ['chatMessages']
+        ]); 
+    }
 }
