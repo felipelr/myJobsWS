@@ -48,7 +48,8 @@ class ClientsController extends AppController
                         $count = count($explodePhoto);
                         $outputFile = WWW_ROOT . 'img' . DS . $explodePhoto[$count - 1];
                         if (file_exists($outputFile))
-                            unlink($outputFile);
+                            if (!is_dir($outputFile))
+                                unlink($outputFile);
                     } catch (Exception $ex) {
                     }
 

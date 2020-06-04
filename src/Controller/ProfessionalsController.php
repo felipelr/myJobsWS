@@ -80,7 +80,8 @@ class ProfessionalsController extends AppController
                         $count = count($explodePhoto);
                         $outputFile = WWW_ROOT . 'img' . DS . $explodePhoto[$count - 1];
                         if (file_exists($outputFile))
-                            unlink($outputFile);
+                            if (!is_dir($outputFile))
+                                unlink($outputFile);
                     } catch (Exception $ex) {
                     }
 
@@ -103,7 +104,8 @@ class ProfessionalsController extends AppController
                         $count = count($explodePhoto);
                         $outputFile = WWW_ROOT . 'img' . DS . $explodePhoto[$count - 1];
                         if (file_exists($outputFile))
-                            unlink($outputFile);
+                            if (!is_dir($outputFile))
+                                unlink($outputFile);
                     } catch (Exception $ex) {
                     }
 
@@ -124,7 +126,7 @@ class ProfessionalsController extends AppController
                     $professional->name = $professionalUpdate->name;
                     $professional->phone =  $professionalUpdate->phone;
                     $professional->document = $professionalUpdate->document;
-                    $professional->date_birth = $professionalUpdate->date_birth ;
+                    $professional->date_birth = $professionalUpdate->date_birth;
                     $professional->description = $professionalUpdate->description;
                     $professional->photo = $professionalUpdate->photo;
                     $professional->backImage = $professionalUpdate->backImage;
