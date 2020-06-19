@@ -16,6 +16,52 @@ class ProfessionalsController extends AppController
         $this->loadComponent('RequestHandler');
     }
 
+    public function add()
+    {
+        $professional = $this->Professionals->newEntity();
+        $errorMessage = '';
+        if ($this->request->is('post')) {
+            $professional = $this->Professionals->patchEntity($professional, $this->request->getData());
+            if ($errorMessage == '') {
+                $professionalExists = $this->Professionals->find('all')
+                    ->where(['Professionals.user_id = ' => $professional->user_id])
+                    ->limit(1);
+
+                if ($professionalExists->count() > 0) {
+                    //not ok
+                    $errorMessage = 'Já existe um profissional cadastrado com esse email.';
+                } else {
+                    $professional->photo = '';
+                    $professional->backImage = '';
+
+                    if ($this->Professionals->save($professional)) {
+                        //ok
+                        $errorMessage = '';
+                    } else {
+                        //not ok
+                        $errorMessage = 'Não foi possível habilitar os serviços no MyJobs.' . json_encode($professional->getErrors());
+                    }
+                }
+            }
+        }
+
+        if ($errorMessage == '') {
+            $professional = $this->Professionals->get($professional->id, [
+                'contain' => ['Users']
+            ]);
+            $this->set([
+                'professional' => $professional,
+                '_serialize' => ['professional']
+            ]);
+        } else {
+            $this->set([
+                'error' => true,
+                'errorMessage' => $errorMessage,
+                '_serialize' => ['error', 'errorMessage']
+            ]);
+        }
+    }
+
     public function newSuggest()
     {
         $errorMessage = '';
