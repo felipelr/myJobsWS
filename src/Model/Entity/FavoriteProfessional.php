@@ -4,22 +4,18 @@ namespace App\Model\Entity;
 use Cake\ORM\Entity;
 
 /**
- * ProfessionalsAddress Entity
+ * FavoriteProfessional Entity
  *
  * @property int $id
- * @property int $professional_id
- * @property int $city_id
- * @property string $street
- * @property string $street_number
- * @property string $neighborhood
- * @property string $complement
- * @property string $latitude
- * @property string $longitude
+ * @property int|null $professional_id
+ * @property int|null $user_id
+ * @property \Cake\I18n\FrozenTime|null $created
+ * @property \Cake\I18n\FrozenTime|null $modified
  *
  * @property \App\Model\Entity\Professional $professional
- * @property \App\Model\Entity\City $city
+ * @property \App\Model\Entity\User $user
  */
-class ProfessionalsAddress extends Entity
+class FavoriteProfessional extends Entity
 {
     /**
      * Fields that can be mass assigned using newEntity() or patchEntity().
@@ -32,14 +28,10 @@ class ProfessionalsAddress extends Entity
      */
     protected $_accessible = [
         'professional_id' => true,
-        'city_id' => true,
-        'street' => true,
-        'street_number' => true,
-        'neighborhood' => true,
-        'complement' => true,
-        'latitude' => true,
-        'longitude' => true,
+        'user_id' => true,
+        'created' => true,
+        'modified' => true,
         'professional' => true,
-        'city' => true
+        'user' => true
     ];
 }

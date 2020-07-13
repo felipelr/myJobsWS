@@ -12,6 +12,7 @@ use Cake\ORM\Entity;
  * @property string $street
  * @property string $street_number
  * @property string $neighborhood
+ * @property string $complement
  * @property string $latitude
  * @property string $longitude
  *
@@ -35,6 +36,7 @@ class ClientsAddress extends Entity
         'street' => true,
         'street_number' => true,
         'neighborhood' => true,
+        'complement' => true,
         'latitude' => true,
         'longitude' => true,
         'client' => true,

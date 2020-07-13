@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Model\Table;
 
 use Cake\ORM\Query;
@@ -73,6 +74,11 @@ class ProfessionalsAddressesTable extends Table
             ->scalar('neighborhood')
             ->maxLength('neighborhood', 255)
             ->allowEmptyString('neighborhood', false);
+
+        $validator
+            ->scalar('complement')
+            ->maxLength('complement', 255)
+            ->allowEmptyString('complement', false);
 
         $validator
             ->scalar('latitude')
