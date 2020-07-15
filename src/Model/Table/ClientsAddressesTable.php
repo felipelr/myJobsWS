@@ -78,7 +78,7 @@ class ClientsAddressesTable extends Table
         $validator
             ->scalar('complement')
             ->maxLength('complement', 255)
-            ->allowEmptyString('complement', false);
+            ->allowEmptyString('complement', true);
 
         $validator
             ->scalar('latitude')
