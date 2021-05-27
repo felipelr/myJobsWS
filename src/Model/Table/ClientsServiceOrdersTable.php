@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Model\Table;
 
 use Cake\ORM\Query;
@@ -51,6 +52,12 @@ class ClientsServiceOrdersTable extends Table
         $this->belongsTo('Services', [
             'foreignKey' => 'service_id'
         ]);
+        $this->belongsTo('Professionals', [
+            'foreignKey' => 'professional_selected'
+        ]);
+        $this->hasMany('ProfessionalsServiceOrders', [
+            'foreignKey' => 'clients_service_orders_id'
+        ]);
     }
 
     /**
@@ -87,6 +94,7 @@ class ClientsServiceOrdersTable extends Table
         $rules->add($rules->existsIn(['client_id'], 'Clients'));
         $rules->add($rules->existsIn(['client_address_id'], 'ClientsAddresses'));
         $rules->add($rules->existsIn(['service_id'], 'Services'));
+        $rules->add($rules->existsIn(['professional_selected'], 'Professionals'));
 
         return $rules;
     }

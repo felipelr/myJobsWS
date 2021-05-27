@@ -75,6 +75,7 @@ class FavoriteProfessionalsController extends AppController
             $query = $ProfessionalServices->find('all')
                 ->where([
                     'ProfessionalServices.professional_id = ' => $item->professional_id,
+                    'ProfessionalServices.amount_ratings > ' => 0
                 ]);
             $rateProfessional = $query->select([
                 'sumRate' => $query->func()->sum('rating'),

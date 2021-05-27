@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Model\Entity;
 
 use Cake\ORM\Entity;
@@ -12,6 +13,7 @@ use Cake\ORM\Entity;
  * @property int|null $service_id
  * @property int|null $quantity
  * @property string|null $description
+ * @property string|null $status
  * @property \Cake\I18n\FrozenTime|null $created
  * @property \Cake\I18n\FrozenTime|null $modified
  *
@@ -34,12 +36,16 @@ class ClientsServiceOrder extends Entity
         'client_id' => true,
         'client_address_id' => true,
         'service_id' => true,
+        'professional_selected' => true,
+        'date_selected' => true,
         'quantity' => true,
         'description' => true,
+        'status' => true,
         'created' => true,
         'modified' => true,
         'client' => true,
         'clients_address' => true,
-        'service' => true
+        'service' => true,
+        'professionals_service_orders' => true
     ];
 }

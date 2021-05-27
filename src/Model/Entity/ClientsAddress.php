@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Model\Entity;
 
 use Cake\ORM\Entity;
@@ -40,6 +41,7 @@ class ClientsAddress extends Entity
         'latitude' => true,
         'longitude' => true,
         'client' => true,
-        'city' => true
+        'city' => true,
+        'active' => true,
     ];
 }

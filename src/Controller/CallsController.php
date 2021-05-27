@@ -32,14 +32,18 @@ class CallsController extends AppController
     public function client($client_id = null)
     {
         $type = $this->request->getQuery('type', 0);
+        $limit = $this->request->getQuery('limit', 10);
+        $page = $this->request->getQuery('page', 1);
         $calls = [];
         if ($type == 0) {
             $calls = $this->Calls->find('all')
                 ->where([
                     'Calls.client_id = ' => $client_id,
-                    'Calls.status = ' => 1,
                 ])
+                ->whereInList('Calls.status', [1, 2])
                 ->contain(['Professionals', 'Services', 'Services.Subcategories', 'Services.Subcategories.Categories', 'Ratings'])
+                ->limit($limit)
+                ->page($page)
                 ->order(['Calls.modified' => 'DESC'])
                 ->all();
         } else {
@@ -49,6 +53,8 @@ class CallsController extends AppController
                     'Calls.status = ' => $type,
                 ])
                 ->contain(['Professionals', 'Services', 'Services.Subcategories', 'Services.Subcategories.Categories', 'Ratings'])
+                ->limit($limit)
+                ->page($page)
                 ->order(['Calls.modified' => 'DESC'])
                 ->all();
         }
@@ -62,14 +68,18 @@ class CallsController extends AppController
     public function professional($professional_id = null)
     {
         $type = $this->request->getQuery('type', 0);
+        $limit = $this->request->getQuery('limit', 10);
+        $page = $this->request->getQuery('page', 1);
         $calls = [];
         if ($type == 0) {
             $calls = $this->Calls->find('all')
                 ->where([
                     'Calls.professional_id = ' => $professional_id,
-                    'Calls.status = ' => 1,
                 ])
+                ->whereInList('Calls.status', [1, 2])
                 ->contain(['Clients', 'Services', 'Services.Subcategories', 'Services.Subcategories.Categories'])
+                ->limit($limit)
+                ->page($page)
                 ->order(['Calls.modified' => 'DESC'])
                 ->all();
         } else {
@@ -79,6 +89,8 @@ class CallsController extends AppController
                     'Calls.status = ' => $type,
                 ])
                 ->contain(['Clients', 'Services', 'Services.Subcategories', 'Services.Subcategories.Categories'])
+                ->limit($limit)
+                ->page($page)
                 ->order(['Calls.modified' => 'DESC'])
                 ->all();
         }
@@ -103,6 +115,7 @@ class CallsController extends AppController
                     $Professionals = TableRegistry::getTableLocator()->get('Professionals');
                     $professional = $Professionals->find('all')
                         ->where(['Professionals.id = ' => $call->professional_id])
+                        ->contain(['Users'])
                         ->first();
 
                     $Clients = TableRegistry::getTableLocator()->get('Clients');
@@ -112,31 +125,63 @@ class CallsController extends AppController
                         ->first();
 
                     if (isset($client) && isset($professional)) {
-                        $tokenApp = $client['user']['fcm_token'] == null ? '' : $client['user']['fcm_token'];
-                        $title = $client['name'];
-                        if ($tokenApp != '') {
-                            try {
-                                $factory = (new Factory())
-                                    ->withServiceAccount(WWW_ROOT . 'myjobstest-719a9-firebase-adminsdk-bjq4h-db0fea2767.json');
-                                $messaging = $factory->createMessaging();
+                        if ($call->confirm == 1) {
+                            $tokenApp = $professional['user']['fcm_token'] == null ? '' : $professional['user']['fcm_token'];
+                            $title = $professional['name'];
+                            if ($tokenApp != '') {
+                                try {
+                                    $factory = (new Factory())
+                                        ->withServiceAccount(WWW_ROOT . 'myjobstest-719a9-firebase-adminsdk-bjq4h-db0fea2767.json');
+                                    $messaging = $factory->createMessaging();
 
-                                $messageFCM = CloudMessage::withTarget('token', $tokenApp)
-                                    ->withNotification([
-                                        'title' => $title,
-                                        'body' => 'Um novo chamado foi aberto por ' . $professional['name'],
-                                        'icon' => 'ic_myjobs'
-                                    ])
-                                    ->withData([
-                                        'message' => json_encode([
-                                            'type' => 'call',
-                                            'professional_id' => $call->professional_id,
-                                            'client_id' => $call->client_id,
-                                            'call_id' => $call->id
+                                    $messageFCM = CloudMessage::withTarget('token', $tokenApp)
+                                        ->withNotification([
+                                            'title' => $title,
+                                            'body' => 'Nova solicitação de trabalho registrada por ' . $client['name'],
+                                            'icon' => 'ic_strab',
                                         ])
-                                    ]);
+                                        ->withData([
+                                            'message' => json_encode([
+                                                'type' => 'call_add',
+                                                'to' => 'professional',
+                                                'professional_id' => $call->professional_id,
+                                                'client_id' => $call->client_id,
+                                                'call_id' => $call->id
+                                            ])
+                                        ]);
 
-                                $messaging->send($messageFCM);
-                            } catch (Exception $ex) {
+                                    $messaging->send($messageFCM);
+                                } catch (Exception $ex) {
+                                }
+                            }
+                        } else {
+                            $tokenApp = $client['user']['fcm_token'] == null ? '' : $client['user']['fcm_token'];
+                            $title = $client['name'];
+                            if ($tokenApp != '') {
+                                try {
+                                    $factory = (new Factory())
+                                        ->withServiceAccount(WWW_ROOT . 'myjobstest-719a9-firebase-adminsdk-bjq4h-db0fea2767.json');
+                                    $messaging = $factory->createMessaging();
+
+                                    $messageFCM = CloudMessage::withTarget('token', $tokenApp)
+                                        ->withNotification([
+                                            'title' => $title,
+                                            'body' => 'Um novo trabalho foi aberto por ' . $professional['name'],
+                                            'icon' => 'ic_strab',
+                                        ])
+                                        ->withData([
+                                            'message' => json_encode([
+                                                'type' => 'call_add',
+                                                'to' => 'client',
+                                                'professional_id' => $call->professional_id,
+                                                'client_id' => $call->client_id,
+                                                'call_id' => $call->id
+                                            ])
+                                        ]);
+
+                                    $messaging->send($messageFCM);
+                                } catch (Exception $ex) {
+                                }
                             }
                         }
                     }
@@ -200,11 +245,12 @@ class CallsController extends AppController
                                     ->withNotification([
                                         'title' => $title,
                                         'body' => 'Chamado finalizado por ' . $professional['name'],
-                                        'icon' => 'ic_myjobs'
+                                        'icon' => 'ic_strab',
                                     ])
                                     ->withData([
                                         'message' => json_encode([
                                             'type' => 'call_finished',
+                                            'to' => 'client',
                                             'professional_id' => $call->professional_id,
                                             'client_id' => $call->client_id,
                                             'call_id' => $call->id
@@ -241,66 +287,158 @@ class CallsController extends AppController
         }
     }
 
-    public function teste()
+    public function accept()
     {
-        $client_id = $this->request->query('client_id');
-        $professional_id = $this->request->query('professional_id');
-        $from = $this->request->query('from');
-        $call_id = $this->request->query('call_id');
+        $errorMessage = '';
+        $call = $this->Calls->newEntity();
+        if ($this->request->is(['patch', 'post', 'put'])) {
+            try {
+                $call = $this->Calls->get($this->request->getData('id'));
+                $call->confirm = 2;
 
-        $tokenApp = '';
+                if ($this->Calls->save($call)) {
+                    //sucesso     
+                    $Professionals = TableRegistry::getTableLocator()->get('Professionals');
+                    $professional = $Professionals->find('all')
+                        ->where(['Professionals.id = ' => $call->professional_id])
+                        ->first();
 
-        if ($from == 'client') {
-            $Professionals = TableRegistry::getTableLocator()->get('Professionals');
-            $professional = $Professionals->find('all')
-                ->where(['Professionals.id = ' => $professional_id])
-                ->contain(['Users'])
-                ->first();
-            if (isset($professional)) {
-                $tokenApp = $professional['user']['fcm_token'] == null ? '' : $professional['user']['fcm_token'];
-                $title = $professional['name'];
+                    $Clients = TableRegistry::getTableLocator()->get('Clients');
+                    $client = $Clients->find('all')
+                        ->where(['Clients.id = ' => $call->client_id])
+                        ->contain(['Users'])
+                        ->first();
+
+                    if (isset($client) && isset($professional)) {
+                        $tokenApp = $client['user']['fcm_token'] == null ? '' : $client['user']['fcm_token'];
+                        $title = $client['name'];
+                        if ($tokenApp != '') {
+                            try {
+                                $factory = (new Factory())
+                                    ->withServiceAccount(WWW_ROOT . 'myjobstest-719a9-firebase-adminsdk-bjq4h-db0fea2767.json');
+                                $messaging = $factory->createMessaging();
+
+                                $messageFCM = CloudMessage::withTarget('token', $tokenApp)
+                                    ->withNotification([
+                                        'title' => $title,
+                                        'body' => 'Trabalho aceito por ' . $professional['name'],
+                                        'icon' => 'ic_strab',
+                                    ])
+                                    ->withData([
+                                        'message' => json_encode([
+                                            'type' => 'call_accepted',
+                                            'to' => 'client',
+                                            'professional_id' => $call->professional_id,
+                                            'client_id' => $call->client_id,
+                                            'call_id' => $call->id
+                                        ])
+                                    ]);
+
+                                $messaging->send($messageFCM);
+                            } catch (Exception $ex) {
+                            }
+                        }
+                    }
+
+                    $errorMessage = '';
+                } else {
+                    //erro
+                    $errorMessage = 'Não foi possível aceitar o trabalho.' . json_encode($call->getErrors());
+                }
+            } catch (Exception $ex) {
+                $errorMessage = $ex->getMessage();
             }
+        }
+
+        if ($errorMessage == '') {
+            $this->set([
+                'call' => $call,
+                '_serialize' => ['call']
+            ]);
         } else {
-            $Clients = TableRegistry::getTableLocator()->get('Clients');
-            $client = $Clients->find('all')
-                ->where(['Clients.id = ' => $client_id])
-                ->contain(['Users'])
-                ->first();
-            if (isset($client)) {
-                $tokenApp = $client['user']['fcm_token'] == null ? '' : $client['user']['fcm_token'];
-                $title = $client['name'];
+            $this->set([
+                'error' => true,
+                'errorMessage' => $errorMessage,
+                '_serialize' => ['error', 'errorMessage']
+            ]);
+        }
+    }
+
+    public function reject()
+    {
+        $errorMessage = '';
+        $call = $this->Calls->newEntity();
+        if ($this->request->is(['patch', 'post', 'put'])) {
+            try {
+                $call = $this->Calls->get($this->request->getData('id'));
+                $call->confirm = 3;
+                $call->status = 3;
+
+                if ($this->Calls->save($call)) {
+                    //sucesso     
+                    $Professionals = TableRegistry::getTableLocator()->get('Professionals');
+                    $professional = $Professionals->find('all')
+                        ->where(['Professionals.id = ' => $call->professional_id])
+                        ->first();
+
+                    $Clients = TableRegistry::getTableLocator()->get('Clients');
+                    $client = $Clients->find('all')
+                        ->where(['Clients.id = ' => $call->client_id])
+                        ->contain(['Users'])
+                        ->first();
+
+                    if (isset($client) && isset($professional)) {
+                        $tokenApp = $client['user']['fcm_token'] == null ? '' : $client['user']['fcm_token'];
+                        $title = $client['name'];
+                        if ($tokenApp != '') {
+                            try {
+                                $factory = (new Factory())
+                                    ->withServiceAccount(WWW_ROOT . 'myjobstest-719a9-firebase-adminsdk-bjq4h-db0fea2767.json');
+                                $messaging = $factory->createMessaging();
+
+                                $messageFCM = CloudMessage::withTarget('token', $tokenApp)
+                                    ->withNotification([
+                                        'title' => $title,
+                                        'body' => 'Trabalho rejeitado por ' . $professional['name'],
+                                        'icon' => 'ic_strab',
+                                    ])
+                                    ->withData([
+                                        'message' => json_encode([
+                                            'type' => 'call_rejected',
+                                            'to' => 'client',
+                                            'professional_id' => $call->professional_id,
+                                            'client_id' => $call->client_id,
+                                            'call_id' => $call->id
+                                        ])
+                                    ]);
+
+                                $messaging->send($messageFCM);
+                            } catch (Exception $ex) {
+                            }
+                        }
+                    }
+
+                    $errorMessage = '';
+                } else {
+                    //erro
+                    $errorMessage = 'Não foi possível rejeitado o trabalho.' . json_encode($call->getErrors());
+                }
+            } catch (Exception $ex) {
+                $errorMessage = $ex->getMessage();
             }
         }
 
-        $message = json_encode([
-            'type' => 'call',
-            'professional_id' => $professional_id,
-            'client_id' => $client_id,
-            'call_id' => $call_id,
-        ]);
-
-        try {
-            $factory = (new Factory())
-                ->withServiceAccount(WWW_ROOT . 'myjobstest-719a9-firebase-adminsdk-bjq4h-db0fea2767.json');
-            $messaging = $factory->createMessaging();
-
-            $messageFCM = CloudMessage::withTarget('token', $tokenApp)
-                ->withNotification([
-                    'title' => $title,
-                    'body' => 'Teste de mensagem',
-                    'icon' => 'ic_launcher'
-                ])
-                ->withData([
-                    'message' => $message
-                ]);
-
-            $messaging->send($messageFCM);
-        } catch (Exception $ex) {
+        if ($errorMessage == '') {
+            $this->set([
+                'call' => $call,
+                '_serialize' => ['call']
+            ]);
+        } else {
+            $this->set([
+                'error' => true,
+                'errorMessage' => $errorMessage,
+                '_serialize' => ['error', 'errorMessage']
+            ]);
         }
-
-        $this->set([
-            'chatMessages' => $message,
-            '_serialize' => ['chatMessages']
-        ]);
     }
 }

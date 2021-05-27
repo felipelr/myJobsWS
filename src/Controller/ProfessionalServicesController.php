@@ -76,7 +76,10 @@ class ProfessionalServicesController extends AppController
         if ($errorMessage == '') {
             $config = [];
             $query = $this->ProfessionalServices->find('all')
-                ->where(['ProfessionalServices.professional_id = ' => $professional_id])
+                ->where([
+                    'ProfessionalServices.professional_id = ' => $professional_id,
+                    'ProfessionalServices.active' => 1
+                ])
                 ->contain(['Services', 'Services.Subcategories', 'Services.Subcategories.Categories']);
 
             foreach ($query as $row) {

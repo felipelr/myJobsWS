@@ -52,7 +52,40 @@ class InstagramController extends AppController
                     //atualizar
                     $storyRow->json = $story->json;
                     if ($InstagramStories->save($storyRow)) {
-                        //sucesso                
+                        //sucesso        
+                        //salvar imagens 
+                        $json = json_decode($story->json, true);
+                        foreach ($json as $item) {
+                            $output_file_temp = WWW_ROOT . 'img' . DS . 'story-temp.jpeg';
+                            $output_file = WWW_ROOT . 'img' . DS . 'instagram-' . $item['id'] . '.jpeg';
+                            $url = $item['media_url'];
+                            $altura = 600;
+                            $largura = 600;
+
+                            file_put_contents($output_file_temp, file_get_contents($url));
+                            $image_temp = imagecreatefromjpeg($output_file_temp);
+                            $height_temp = imagesy($image_temp);
+                            $width_temp = imagesx($image_temp);
+
+                            if ($height_temp > $width_temp) {
+                                $ratio = $height_temp / $width_temp;
+                                $diff = $height_temp - $altura;
+                                $largura = $width_temp - ($diff / $ratio);
+                            } else if ($width_temp > $height_temp) {
+                                $ratio = $width_temp / $height_temp;
+                                $diff = $width_temp - $largura;
+                                $altura = $height_temp - ($diff / $ratio);
+                            }
+
+                            $image_resized = imagecreatetruecolor($largura, $altura);
+
+                            imagecopyresampled($image_resized, $image_temp, 0, 0, 0, 0, $largura, $altura, $width_temp, $height_temp);
+                            imagejpeg($image_resized, $output_file);
+                            imagedestroy($image_temp);
+                            imagedestroy($image_resized);
+                            unlink($output_file_temp);
+                        }
+
                         $errorMessage = '';
                     } else {
                         //erro

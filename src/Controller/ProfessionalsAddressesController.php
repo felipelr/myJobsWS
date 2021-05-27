@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Controller;
 
 use App\Controller\AppController;
@@ -17,7 +18,10 @@ class ProfessionalsAddressesController extends AppController
     {
         $professionalsAddress = [];
         $query = $this->ProfessionalsAddresses->find('all')
-            ->where(['ProfessionalsAddresses.professional_id = ' => $professional_id])
+            ->where([
+                'ProfessionalsAddresses.professional_id = ' => $professional_id,
+                'ProfessionalsAddresses.active' => 1
+            ])
             ->contain(['Cities', 'Cities.States']);
 
         foreach ($query as $row) {
@@ -29,7 +33,7 @@ class ProfessionalsAddressesController extends AppController
             '_serialize' => ['professionalsAddresses']
         ]);
     }
-    
+
     public function add()
     {
         $errorMessage = '';
@@ -37,6 +41,7 @@ class ProfessionalsAddressesController extends AppController
         if ($this->request->is('post')) {
             $professionalsAddress = $this->ProfessionalsAddresses->newEntity();
             $professionalsAddress = $this->ProfessionalsAddresses->patchEntity($professionalsAddress, $this->request->getData());
+            $professionalsAddress->active = 1;
             if ($this->ProfessionalsAddresses->save($professionalsAddress)) {
                 $Professionals = TableRegistry::getTableLocator()->get('Professionals');
                 $professional = $Professionals->find('all')
@@ -45,7 +50,10 @@ class ProfessionalsAddressesController extends AppController
                     ->first();
                 if (isset($professional['id'])) {
                     $professional['professionalsAddresses'] = $this->ProfessionalsAddresses->find('all')
-                        ->where(['ProfessionalsAddresses.professional_id = ' => $professional['id']])
+                        ->where([
+                            'ProfessionalsAddresses.professional_id = ' => $professional->id,
+                            'ProfessionalsAddresses.active' => 1
+                        ])
                         ->contain(['Cities', 'Cities.States'])
                         ->all();
                 }
@@ -69,7 +77,7 @@ class ProfessionalsAddressesController extends AppController
             ]);
         }
     }
-    
+
     public function edit($id = null)
     {
         $errorMessage = '';
@@ -78,6 +86,7 @@ class ProfessionalsAddressesController extends AppController
             $professionalsAddress = $this->ProfessionalsAddresses->newEntity();
             $professionalsAddress = $this->ProfessionalsAddresses->patchEntity($professionalsAddress, $this->request->getData());
             $professionalsAddress->id = $id;
+            $professionalsAddress->active = 1;
             unset($professionalsAddress['city']);
 
             if (!isset($professionalsAddress['latitude'])) {
@@ -93,7 +102,10 @@ class ProfessionalsAddressesController extends AppController
                     ->first();
                 if (isset($professional['id'])) {
                     $professional['professionalsAddresses'] = $this->ProfessionalsAddresses->find('all')
-                        ->where(['ProfessionalsAddresses.professional_id = ' => $professional['id']])
+                        ->where([
+                            'ProfessionalsAddresses.professional_id = ' => $professional->id,
+                            'ProfessionalsAddresses.active' => 1
+                        ])
                         ->contain(['Cities', 'Cities.States'])
                         ->all();
                 }
@@ -117,22 +129,26 @@ class ProfessionalsAddressesController extends AppController
             ]);
         }
     }
-    
+
     public function delete($id = null)
     {
         $errorMessage = '';
         $professional = null;
         $this->request->allowMethod(['post', 'delete']);
         $professionalsAddress = $this->ProfessionalsAddresses->get($id);
-        if ($this->ProfessionalsAddresses->delete($professionalsAddress)) {
+        $professionalsAddress->active = 0;
+        if ($this->ProfessionalsAddresses->save($professionalsAddress)) {
             $Professionals = TableRegistry::getTableLocator()->get('Professionals');
             $professional = $Professionals->find('all')
                 ->where(['Professionals.id = ' => $professionalsAddress['professional_id']])
                 ->contain(['Users'])
                 ->first();
             if (isset($professional['id'])) {
-                $professional['professionalsAddresses'] = $this->ProfessionalsAddresses->find('all')
-                    ->where(['ProfessionalsAddresses.professional_id = ' => $professional['id']])
+                $professional->professionalsAddresses = $this->ProfessionalsAddresses->find('all')
+                    ->where([
+                        'ProfessionalsAddresses.professional_id = ' => $professional->id,
+                        'ProfessionalsAddresses.active' => 1
+                    ])
                     ->contain(['Cities', 'Cities.States'])
                     ->all();
             }

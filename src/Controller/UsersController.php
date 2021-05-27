@@ -103,7 +103,10 @@ class UsersController extends AppController
                 ->first();
             if (isset($clientRow['id'])) {
                 $clientRow['clientsAddresses'] = $ClientsAddresses->find('all')
-                    ->where(['ClientsAddresses.client_id = ' => $clientRow['id']])
+                    ->where([
+                        'ClientsAddresses.client_id = ' => $clientRow['id'],
+                        'ClientsAddresses.active' => 1
+                    ])
                     ->contain(['Cities', 'Cities.States'])
                     ->all();
             }
@@ -113,7 +116,10 @@ class UsersController extends AppController
                 ->first();
             if (isset($professionalRow['id'])) {
                 $professionalRow['professionalsAddresses'] = $ProfessionalsAddresses->find('all')
-                    ->where(['ProfessionalsAddresses.professional_id = ' => $professionalRow['id']])
+                    ->where([
+                        'ProfessionalsAddresses.professional_id = ' => $professionalRow['id'],
+                        'ProfessionalsAddresses.active' => 1
+                    ])
                     ->contain(['Cities', 'Cities.States'])
                     ->all();
             }
@@ -228,7 +234,10 @@ class UsersController extends AppController
 
             if ($errorMessage == '') {
                 $userExistent = $this->Users->find('all')
-                    ->where(['Users.email = ' => $user->email])
+                    ->where([
+                        'Users.email = ' => $user->email,
+                        'Users.active' => 1
+                    ])
                     ->limit(1);
 
                 if ($userExistent->count() > 0) {
@@ -253,7 +262,7 @@ class UsersController extends AppController
                         } else {
                             //not ok
                             $this->Users->delete($user);
-                            $errorMessage = 'Não foi possível criar o usuário. ' . json_encode($client->errors());
+                            $errorMessage = 'Não foi possível criar o usuário. ' . json_encode($client->getErrors());
                         }
 
                         if ($errorMessage == '') {
@@ -323,11 +332,17 @@ class UsersController extends AppController
 
                 if ($requestData['socialMidiaType'] == 'facebook') {
                     $queryUsers = $this->Users->find('all')
-                        ->where(['Users.facebook_token = ' => $requestData['socialMidiaId']])
+                        ->where([
+                            'Users.facebook_token = ' => $requestData['socialMidiaId'],
+                            'Users.active' => 1
+                        ])
                         ->limit(1);
                 } else if ($requestData['socialMidiaType'] == 'google') {
                     $queryUsers = $this->Users->find('all')
-                        ->where(['Users.google_token = ' => $requestData['socialMidiaId']])
+                        ->where([
+                            'Users.google_token = ' => $requestData['socialMidiaId'],
+                            'Users.active' => 1
+                        ])
                         ->limit(1);
                 } else {
                     $errorMessage = 'Tipo de social mídia inválido.';
@@ -347,7 +362,10 @@ class UsersController extends AppController
                             ->first();
                         if (isset($clientRow['id'])) {
                             $clientRow['clientsAddresses'] = $ClientsAddresses->find('all')
-                                ->where(['ClientsAddresses.client_id = ' => $clientRow['id']])
+                                ->where([
+                                    'ClientsAddresses.client_id = ' => $clientRow['id'],
+                                    'ClientsAddresses.active' => 1
+                                ])
                                 ->contain(['Cities', 'Cities.States'])
                                 ->all();
                         }
@@ -358,7 +376,10 @@ class UsersController extends AppController
                             ->first();
                         if (isset($professionalRow['id'])) {
                             $professionalRow['professionalsAddresses'] = $ProfessionalsAddresses->find('all')
-                                ->where(['ProfessionalsAddresses.professional_id = ' => $professionalRow['id']])
+                                ->where([
+                                    'ProfessionalsAddresses.professional_id = ' => $professionalRow['id'],
+                                    'ProfessionalsAddresses.active' => 1
+                                ])
                                 ->contain(['Cities', 'Cities.States'])
                                 ->all();
                         }

@@ -111,14 +111,16 @@ class ProfessionalsController extends AppController
                 $imageBackground = $this->request->getData('imageBackground');
                 $professional = $this->Professionals->patchEntity($professional, $this->request->getData());
                 $professionalUpdate = $this->Professionals->newEntity();
-                $professionalUpdate->id = $professional['id'];
-                $professionalUpdate->name = $professional['name'];
-                $professionalUpdate->phone = $professional['phone'];
-                $professionalUpdate->document = $professional['document'];
-                $professionalUpdate->date_birth = $professional['date_birth'];
-                $professionalUpdate->description = $professional['description'];
+                $professionalUpdate->id = $professional->id;
+                $professionalUpdate->name = $professional->name;
+                $professionalUpdate->phone = $professional->phone;
+                $professionalUpdate->document = $professional->document;
+                $professionalUpdate->date_birth = $professional->date_birth;
+                $professionalUpdate->description = $professional->description;
+                $professionalUpdate->categorie_id = $professional->categorie_id;
+                $professionalUpdate->websocket = $professional->websocket;
 
-                $professional = $this->Professionals->get($professional['id']);
+                $professional = $this->Professionals->get($professional->id);
 
                 if (isset($image) && $image != '') {
                     try {
@@ -176,6 +178,8 @@ class ProfessionalsController extends AppController
                     $professional->description = $professionalUpdate->description;
                     $professional->photo = $professionalUpdate->photo;
                     $professional->backImage = $professionalUpdate->backImage;
+                    $professional->categorie_id = $professionalUpdate->categorie_id;
+                    $professional->websocket = $professionalUpdate->websocket;
                     //sucesso                
                     $errorMessage = '';
                 } else {
@@ -191,7 +195,10 @@ class ProfessionalsController extends AppController
             $ProfessionalsAddresses = TableRegistry::getTableLocator()->get('ProfessionalsAddresses');
             $professional['modified'] = date('Y-m-d H:i:s');
             $professional['professionalsAddresses'] = $ProfessionalsAddresses->find('all')
-                ->where(['ProfessionalsAddresses.professional_id = ' => $professional['id']])
+                ->where([
+                    'ProfessionalsAddresses.professional_id = ' => $professional->id,
+                    'ProfessionalsAddresses.active' => 1
+                ])
                 ->contain(['Cities', 'Cities.States'])
                 ->all();
 

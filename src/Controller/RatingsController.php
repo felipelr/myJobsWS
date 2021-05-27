@@ -56,6 +56,9 @@ class RatingsController extends AppController
                     if ($this->Ratings->save($rating)) {
                         //sucesso      
                         $call = $this->Ratings->Calls->get($rating->call_id);
+                        $call->status = 2;
+                        $this->Ratings->Calls->save($call);
+
                         $query = $this->Ratings->find('all')
                             ->contain(['Calls'])
                             ->where([
@@ -107,6 +110,7 @@ class RatingsController extends AppController
                                         ->withData([
                                             'message' => json_encode([
                                                 'type' => 'rating',
+                                                'to' => 'professional',
                                                 'professional_id' => $rating->professional_id,
                                                 'client_id' => $rating->client_id,
                                                 'rating_id' => $rating->id
@@ -154,7 +158,8 @@ class RatingsController extends AppController
                 'Ratings.professional_id = ' => $professional_id,
                 'Calls.service_id = ' => $service_id
             ])
-            ->contain(['Clients', 'Calls']);
+            ->contain(['Clients', 'Calls'])
+            ->order(['Ratings.created' => 'DESC']);
 
         foreach ($query as $row) {
             $comments[] = $row;

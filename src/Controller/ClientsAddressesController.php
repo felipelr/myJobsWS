@@ -18,7 +18,10 @@ class ClientsAddressesController extends AppController
     {
         $clientsAddresses = [];
         $query = $this->ClientsAddresses->find('all')
-            ->where(['ClientsAddresses.client_id = ' => $client_id])
+            ->where([
+                'ClientsAddresses.client_id = ' => $client_id,
+                'ClientsAddresses.active' => 1
+            ])
             ->contain(['Cities', 'Cities.States']);
 
         foreach ($query as $row) {
@@ -38,6 +41,7 @@ class ClientsAddressesController extends AppController
         if ($this->request->is('post')) {
             $clientsAddress = $this->ClientsAddresses->newEntity();
             $clientsAddress = $this->ClientsAddresses->patchEntity($clientsAddress, $this->request->getData());
+            $clientsAddress->active = 1;
             if ($this->ClientsAddresses->save($clientsAddress)) {
                 $Clients = TableRegistry::getTableLocator()->get('Clients');
                 $client = $Clients->find('all')
@@ -46,7 +50,10 @@ class ClientsAddressesController extends AppController
                     ->first();
                 if (isset($client['id'])) {
                     $client['clientsAddresses'] = $this->ClientsAddresses->find('all')
-                        ->where(['ClientsAddresses.client_id = ' => $client['id']])
+                        ->where([
+                            'ClientsAddresses.client_id = ' => $client->id,
+                            'ClientsAddresses.active' => 1
+                        ])
                         ->contain(['Cities', 'Cities.States'])
                         ->all();
                 }
@@ -79,6 +86,7 @@ class ClientsAddressesController extends AppController
             $clientsAddress = $this->ClientsAddresses->newEntity();
             $clientsAddress = $this->ClientsAddresses->patchEntity($clientsAddress, $this->request->getData());
             $clientsAddress->id = $id;
+            $clientsAddress->active = 1;
             unset($clientsAddress['city']);
 
             if (!isset($clientsAddress['latitude'])) {
@@ -94,7 +102,10 @@ class ClientsAddressesController extends AppController
                     ->first();
                 if (isset($client['id'])) {
                     $client['clientsAddresses'] = $this->ClientsAddresses->find('all')
-                        ->where(['ClientsAddresses.client_id = ' => $client['id']])
+                        ->where([
+                            'ClientsAddresses.client_id = ' => $client->id,
+                            'ClientsAddresses.active' => 1
+                        ])
                         ->contain(['Cities', 'Cities.States'])
                         ->all();
                 }
@@ -125,7 +136,8 @@ class ClientsAddressesController extends AppController
         $client = null;
         $this->request->allowMethod(['post', 'delete']);
         $clientsAddress = $this->ClientsAddresses->get($id);
-        if ($this->ClientsAddresses->delete($clientsAddress)) {
+        $clientsAddress->active = 0;
+        if ($this->ClientsAddresses->save($clientsAddress)) {
             $Clients = TableRegistry::getTableLocator()->get('Clients');
             $client = $Clients->find('all')
                 ->where(['Clients.id = ' => $clientsAddress['client_id']])
@@ -133,7 +145,10 @@ class ClientsAddressesController extends AppController
                 ->first();
             if (isset($client['id'])) {
                 $client['clientsAddresses'] = $this->ClientsAddresses->find('all')
-                    ->where(['ClientsAddresses.client_id = ' => $client['id']])
+                    ->where([
+                        'ClientsAddresses.client_id = ' => $client->id,
+                        'ClientsAddresses.active' => 1
+                    ])
                     ->contain(['Cities', 'Cities.States'])
                     ->all();
             }

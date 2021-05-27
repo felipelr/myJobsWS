@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Model\Entity;
 
 use Cake\ORM\Entity;
@@ -35,11 +36,12 @@ class Call extends Entity
         'professional_id' => true,
         'service_id' => true,
         'description' => true,
-        'status' => true,
+        'status' => true, //1 -> aberto, 2-> finalizado, 3-> cancelado
         'created' => true,
         'modified' => true,
         'client' => true,
         'professional' => true,
-        'service' => true
+        'service' => true,
+        'confirm' => true, //0 -> Não precisa de Confirmacao, 1-> Precisa de Confirmacao do Profissional, 2-> Confirmado Pelo Profissional, 3-> Rejeitado pelo Profissional
     ];
 }
