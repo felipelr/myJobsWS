@@ -76,6 +76,10 @@ class ClientsServiceOrdersTable extends Table
             ->allowEmptyString('quantity');
 
         $validator
+            ->integer('quantity_professionals')
+            ->allowEmptyString('quantity_professionals');
+
+        $validator
             ->scalar('description')
             ->allowEmptyString('description');
 

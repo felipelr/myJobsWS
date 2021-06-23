@@ -24,50 +24,58 @@ class ProfessionalsServiceOrdersController extends AppController
             try {
                 $professionalsServiceOrder = $this->ProfessionalsServiceOrders->patchEntity($professionalsServiceOrder, $this->request->getData());
 
-                if ($this->ProfessionalsServiceOrders->save($professionalsServiceOrder)) {
-                    //sucesso
-                    $errorMessage = '';
+                //validar se já não excedeu o limite de orçamentos solicitados pelo cliente
+                $clientsServiceOrders = $this->ProfessionalsServiceOrders->ClientsServiceOrders->get(
+                    $professionalsServiceOrder->clients_service_orders_id,
+                    [
+                        'contain' => ['Clients', 'Clients.Users'],
+                    ]
+                );
 
-                    $clientsServiceOrders = $this->ProfessionalsServiceOrders->ClientsServiceOrders->get(
-                        $professionalsServiceOrder->clients_service_orders_id,
-                        [
-                            'contain' => ['Clients', 'Clients.Users'],
-                        ]
-                    );
+                if ($clientsServiceOrders->quantity_professionals < $clientsServiceOrders->quantity) {
+                    if ($this->ProfessionalsServiceOrders->save($professionalsServiceOrder)) {
+                        //sucesso
+                        $errorMessage = '';
 
-                    $professional = $this->ProfessionalsServiceOrders->Professionals->get($professionalsServiceOrder->professional_id);
+                        //atualizar quantidade de profissionals q enviaram orçamentos
+                        $clientsServiceOrders->quantity_professionals = $clientsServiceOrders->quantity_professionals + 1;
+                        $this->ProfessionalsServiceOrders->ClientsServiceOrders->save($clientsServiceOrders);
 
-                    $tokenApp = $clientsServiceOrders->client->user->fcm_token == null ? '' : $clientsServiceOrders->client->user->fcm_token;
-                    $title = $clientsServiceOrders->client->name;
-                    if ($tokenApp != '') {
-                        try {
-                            $factory = (new Factory())
-                                ->withServiceAccount(WWW_ROOT . 'myjobstest-719a9-firebase-adminsdk-bjq4h-db0fea2767.json');
-                            $messaging = $factory->createMessaging();
+                        //enviar notificação para o cliente
+                        $professional = $this->ProfessionalsServiceOrders->Professionals->get($professionalsServiceOrder->professional_id);
+                        $tokenApp = $clientsServiceOrders->client->user->fcm_token == null ? '' : $clientsServiceOrders->client->user->fcm_token;
+                        $title = $clientsServiceOrders->client->name;
+                        if ($tokenApp != '') {
+                            try {
+                                $factory = (new Factory())
+                                    ->withServiceAccount(WWW_ROOT . 'myjobstest-719a9-firebase-adminsdk-bjq4h-db0fea2767.json');
+                                $messaging = $factory->createMessaging();
 
-                            $messageFCM = CloudMessage::withTarget('token', $tokenApp)
-                                ->withNotification([
-                                    'title' => $title,
-                                    'body' => 'Um orçamento disponibilizado por ' . $professional->name,
-                                    'icon' => 'ic_strab',
-                                ])
-                                ->withData([
-                                    'message' => json_encode([
-                                        'type' => 'service_order_new_budget',
-                                        'to' => 'client',
-                                        'professional_id' => $professionalsServiceOrder->professional_id,
-                                        'client_id' => $clientsServiceOrders->client_id,
-                                        'clients_service_orders_id' => $professionalsServiceOrder->clients_service_orders_id,
+                                $messageFCM = CloudMessage::withTarget('token', $tokenApp)
+                                    ->withNotification([
+                                        'title' => $title,
+                                        'body' => 'O profissional ' . $professional->name . ' deseja enviar uma proposta de orçamento.',
+                                        'icon' => 'ic_strab',
                                     ])
-                                ]);
+                                    ->withData([
+                                        'message' => json_encode([
+                                            'type' => 'service_order_new_budget',
+                                            'to' => 'client',
+                                            'professional_id' => $professionalsServiceOrder->professional_id,
+                                            'client_id' => $clientsServiceOrders->client_id,
+                                            'clients_service_orders_id' => $professionalsServiceOrder->clients_service_orders_id,
+                                        ])
+                                    ]);
 
-                            $messaging->send($messageFCM);
-                        } catch (Exception $ex) {
+                                $messaging->send($messageFCM);
+                            } catch (Exception $ex) {
+                            }
                         }
+                    } else {
+                        $errorMessage = 'Não foi possível abrir a solicitação para ver os dados do cliente.';
                     }
                 } else {
-                    //erro
-                    $errorMessage = 'Não foi possível salvar a aceitação do orçamento.' . json_encode($professionalsServiceOrder->getErrors());
+                    $errorMessage = 'Este cliente já recebeu a quantidade de orçamentos que ele solicitou.';
                 }
             } catch (Exception $ex) {
                 $errorMessage = $ex->getMessage();

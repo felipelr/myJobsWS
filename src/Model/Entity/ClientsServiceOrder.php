@@ -39,6 +39,7 @@ class ClientsServiceOrder extends Entity
         'professional_selected' => true,
         'date_selected' => true,
         'quantity' => true,
+        'quantity_professionals' => true,
         'description' => true,
         'status' => true,
         'created' => true,

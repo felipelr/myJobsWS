@@ -43,27 +43,29 @@ class ProfessionalServicesController extends AppController
                 $this->ProfessionalServices->Professionals->save($professional);
 
                 foreach ($services as $item) {
-                    $row = $this->ProfessionalServices->find('all', [
-                        'conditions' => [
-                            'ProfessionalServices.professional_id' => $professional_id,
-                            'ProfessionalServices.service_id' => $item['id'],
-                        ]
-                    ])->first();
+                    if ($item['subcategory']['category_id'] == $category_id) {
+                        $row = $this->ProfessionalServices->find('all', [
+                            'conditions' => [
+                                'ProfessionalServices.professional_id' => $professional_id,
+                                'ProfessionalServices.service_id' => $item['id'],
+                            ]
+                        ])->first();
 
-                    if ($row != null) {
-                        $row->active = 1;
-                        $this->ProfessionalServices->save($row);
-                    } else {
-                        $newEntity = [
-                            'professional_id' => $professional_id,
-                            'service_id' => $item['id'],
-                            'rating' => 0,
-                            'amount_ratings' => 0,
-                            'active' => 1
-                        ];
-                        $professionalServices = $this->ProfessionalServices->newEntity();
-                        $professionalServices = $this->ProfessionalServices->patchEntity($professionalServices, $newEntity);
-                        $this->ProfessionalServices->save($professionalServices);
+                        if ($row != null) {
+                            $row->active = 1;
+                            $this->ProfessionalServices->save($row);
+                        } else {
+                            $newEntity = [
+                                'professional_id' => $professional_id,
+                                'service_id' => $item['id'],
+                                'rating' => 0,
+                                'amount_ratings' => 0,
+                                'active' => 1
+                            ];
+                            $professionalServices = $this->ProfessionalServices->newEntity();
+                            $professionalServices = $this->ProfessionalServices->patchEntity($professionalServices, $newEntity);
+                            $this->ProfessionalServices->save($professionalServices);
+                        }
                     }
                 }
             } catch (Exception $ex) {

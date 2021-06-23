@@ -17,6 +17,11 @@ use Kreait\Firebase\Factory;
  */
 class ClientsServiceOrdersController extends AppController
 {
+    public function initialize()
+    {
+        parent::initialize();
+    }
+
     public function add()
     {
         $errorMessage = '';
@@ -54,7 +59,7 @@ class ClientsServiceOrdersController extends AppController
                         $messageFCM = CloudMessage::new()
                             ->withNotification([
                                 'title' => 'Proposta de orçamento',
-                                'body' => 'Há uma nova proposta de orçamento disponível para o serviço ' . $service_name,
+                                'body' => 'Um novo cliente solicitou orçamentos para o serviço ' . $service_name,
                                 'icon' => 'ic_strab',
                             ])
                             ->withData([
@@ -137,6 +142,8 @@ class ClientsServiceOrdersController extends AppController
     public function getByProfessional($id)
     {
         $ProfessionalServices = TableRegistry::getTableLocator()->get('ProfessionalServices');
+        $ProfessionalsServiceOrders = TableRegistry::getTableLocator()->get('ProfessionalsServiceOrders');
+
         $arrServices = $ProfessionalServices->find('all')
             ->where([
                 'professional_id' => $id,
@@ -154,14 +161,28 @@ class ClientsServiceOrdersController extends AppController
         }
 
         if (count($services) > 0) {
-            $orders = $this->ClientsServiceOrders->find('all')
+            $queryProfessionals = $ProfessionalsServiceOrders->find('all')
+                ->innerJoinWith('ClientsServiceOrders')
+                ->where(['professional_id' => $id, 'status' => 'opened']);
+
+            $resultProfessionals = $queryProfessionals->select(['ClientsServiceOrders.id'])->all();
+            $professionalOrders = [];
+            foreach ($resultProfessionals as $row) {
+                $professionalOrders[] = $row->_matchingData['ClientsServiceOrders']->id;
+            }
+
+            $query = $this->ClientsServiceOrders->find('all');
+            $orders = $query
                 ->where([
                     'service_id IN ' => $services,
-                    'status' => 'opened'
+                    'status' => 'opened',
+                    'OR' => [
+                        ['quantity_professionals < ' => $query->identifier('quantity')],
+                        ['ClientsServiceOrders.id IN ' => $professionalOrders]
+                    ],
                 ])
                 ->contain(['Clients', 'Services', 'Services.Subcategories', 'Services.Subcategories.Categories'])
-                ->order(['ClientsServiceOrders.created' => 'DESC'])
-                ->all();
+                ->order(['ClientsServiceOrders.created' => 'DESC']);
         }
 
         $this->set([
@@ -186,5 +207,36 @@ class ClientsServiceOrdersController extends AppController
             'orders' => $orders,
             '_serialize' => ['orders']
         ]);
+    }
+
+    public function remove($id)
+    {
+        $errorMessage = '';
+        $clientsServiceOrder = [];
+        try {
+            $clientsServiceOrder = $this->ClientsServiceOrders->get($id);
+            $clientsServiceOrder->status = 'canceled';
+
+            if ($this->ClientsServiceOrders->save($clientsServiceOrder)) {
+                $errorMessage = '';
+            } else {
+                $errorMessage = 'Não foi possível remover o pedido de orçamento.';
+            }
+        } catch (Exception $ex) {
+            $errorMessage = $ex->getMessage();
+        }
+
+        if ($errorMessage == '') {
+            $this->set([
+                'clientsServiceOrder' => $clientsServiceOrder,
+                '_serialize' => ['clientsServiceOrder']
+            ]);
+        } else {
+            $this->set([
+                'error' => true,
+                'errorMessage' => $errorMessage,
+                '_serialize' => ['error', 'errorMessage']
+            ]);
+        }
     }
 }

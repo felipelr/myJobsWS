@@ -46,7 +46,7 @@ class ProfessionalsServiceOrdersTable extends Table
             'foreignKey' => 'professional_id'
         ]);
         $this->belongsTo('ClientsServiceOrders', [
-            'foreignKey' => 'client_service_orders_id'
+            'foreignKey' => 'clients_service_orders_id'
         ]);
     }
 
@@ -74,7 +74,7 @@ class ProfessionalsServiceOrdersTable extends Table
     public function buildRules(RulesChecker $rules)
     {
         $rules->add($rules->existsIn(['professional_id'], 'Professionals'));
-        $rules->add($rules->existsIn(['client_service_orders_id'], 'ClientsServiceOrders'));
+        $rules->add($rules->existsIn(['clients_service_orders_id'], 'ClientsServiceOrders'));
 
         return $rules;
     }

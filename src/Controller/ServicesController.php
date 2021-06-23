@@ -99,6 +99,7 @@ class ServicesController extends AppController
     public function subcategory($id = null)
     {
         $services = $this->Services->find('all')
+            ->contain(['Subcategories'])
             ->where(['Services.subcategory_id = ' => $id]);
 
         $this->set([
