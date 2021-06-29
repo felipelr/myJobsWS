@@ -40,7 +40,7 @@ class CallsController extends AppController
                 ->where([
                     'Calls.client_id = ' => $client_id,
                 ])
-                ->whereInList('Calls.status', [1, 2])
+                ->whereInList('Calls.status', [1, 2, 3])
                 ->contain(['Professionals', 'Services', 'Services.Subcategories', 'Services.Subcategories.Categories', 'Ratings'])
                 ->limit($limit)
                 ->page($page)

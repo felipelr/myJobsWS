@@ -4,6 +4,8 @@ namespace App\Controller;
 
 use App\Controller\AppController;
 use Cake\Datasource\ConnectionManager;
+use Cake\I18n\FrozenDate;
+use Cake\ORM\TableRegistry;
 
 /**
  * Highlights Controller
@@ -140,7 +142,8 @@ class HighlightsController extends AppController
             INNER JOIN professionals as p ON(h.professional_id = p.id)
             INNER JOIN professional_services as ps ON(ps.professional_id = p.id)
             WHERE p.active = 1
-            GROUP BY p.id"
+            GROUP BY p.id
+            ORDER BY h.position"
         )
             ->fetchAll('assoc');
 
@@ -189,6 +192,28 @@ class HighlightsController extends AppController
         $this->set([
             'highlights' => $results,
             '_serialize' => ['highlights']
+        ]);
+    }
+
+    public function register()
+    {
+        $info = [];
+        $HighlightsRegisters = TableRegistry::getTableLocator()->get('HighlightsRegisters');
+        $highlightsRegister = $HighlightsRegisters->newEntity();
+        $highlightsRegister->created = FrozenDate::now();
+        $highlightsRegister->modified = FrozenDate::now();
+        $highlightsRegister = $HighlightsRegisters->patchEntity($highlightsRegister, $this->request->getData());
+
+        if ($HighlightsRegisters->save($highlightsRegister)) {
+            $info = $highlightsRegister;
+        } else {
+            $info['error'] = true;
+            $info['errorMessage'] = 'Não foi possível completar o registro.';
+        }
+
+        $this->set([
+            'info' => $info,
+            '_serialize' => ['info']
         ]);
     }
 }
